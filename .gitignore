@@ -1,0 +1,36 @@
+# Fichiers et dossiers générés par Unity
+Library/
+Logs/
+Temp/
+UserSettings/
+
+# Fichiers et dossiers générés par le package manager de Unity
+Packages/*.tgz
+
+# Fichiers et dossiers de cache
+.obj/
+.DS_Store
+Thumbs.db
+
+# Environnements virtuels Python (si utilisé avec ML-Agents)
+venv/
+
+# Fichiers Visual Studio / Rider
+.vscode/
+*.csproj
+*.sln
+*.unityproj
+*.suo
+*.user
+*.cache
+*.pidb
+*.ide
+
+# Build et artefacts
+Builds/
+*.apk
+*.aab
+*.exe
+*.app
+*.ipa
+*.unitypackage
