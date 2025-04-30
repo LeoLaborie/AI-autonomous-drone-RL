@@ -5,25 +5,19 @@ public class RealisticDroneController : MonoBehaviour
 {
     private Rigidbody rb;
 
-    private Quaternion targetTilt; // Déclaration de targetTilt
-    public float liftForce = 9.81f;       // Force pour monter/descendre
-    public float moveForce = 5f;          // Force de déplacement horizontal
-    public float rotationTorque = 1f;     // Couple de rotation pour Yaw (rotation autour de l'axe Y)
-    public float maxTiltAngle = 30f;      // Angle d'inclinaison maximal en degrés pour le pitch/roll
-    public float tiltSpeed = 5f;          // Vitesse d'inclinaison
-    public float maxSpeed = 10f;          // Limite de la vitesse maximale du drone
+    public float liftForce = 20f;
+    public float moveForce = 10f;
+    public float rotationSpeed = 60f;
+    public float maxTiltAngle = 25f;
+    public float tiltLerpSpeed = 3f;
+    public float maxSpeed = 10f;
 
-    private float currentPitch = 0f;
-    private float currentRoll = 0f;
     private float currentYaw = 0f;
-    private float throttleInput = 0f;     // Pour gérer la montée/descente
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.useGravity = true; // S'assurer que la gravité est activée sur le Rigidbody
-        rb.position = new Vector3(transform.position.x, 1f, transform.position.z); // Position initiale au-dessus du sol
-        targetTilt = transform.rotation;
+        rb.useGravity = true;
     }
 
     void FixedUpdate()
@@ -35,65 +29,54 @@ public class RealisticDroneController : MonoBehaviour
         LimitSpeed();
     }
 
-    // Contrôle de la montée/descente via l'axe "Throttle"
     void HandleThrottle()
     {
-        throttleInput = Input.GetAxis("Throttle"); // Valeur attendue entre -1 et 1
+        float throttle = Input.GetAxis("Throttle"); // entre -1 et 1
 
-        // Appliquer la force de montée/descente en fonction de l'entrée utilisateur
-        if (throttleInput > 0.1f)
+        if (Mathf.Abs(throttle) > 0.05f)
         {
-            rb.AddForce(Vector3.up * throttleInput * liftForce, ForceMode.Force);
-        }
-        else if (throttleInput < -0.1f)
-        {
-            rb.AddForce(Vector3.down * -throttleInput * liftForce, ForceMode.Force);
-        }
-
-        // Lorsque le throttle est à zéro, la gravité fait son travail naturellement
-        // On ne rajoute plus de force manuelle vers le bas
-        if (throttleInput == 0f)
-        {
-            // La gravité fait déjà son travail, on n'ajoute pas de force vers le bas ici
+            rb.AddForce(Vector3.up * throttle * liftForce, ForceMode.Force);
         }
     }
 
-    // Contrôle du déplacement horizontal (avant/arrière, gauche/droite)
     void HandleMovement()
     {
-        float rollInput = Input.GetAxis("Roll");   // Contrôle de l'inclinaison latérale (stick droit horizontal)
-        float pitchInput = Input.GetAxis("Pitch"); // Contrôle de l'inclinaison avant/arrière (stick droit vertical)
+        float rollInput = Input.GetAxis("Roll");   // gauche/droite
+        float pitchInput = Input.GetAxis("Pitch"); // avant/arrière
 
-        Vector3 moveDirection = new Vector3(rollInput, 0, pitchInput).normalized;
-        rb.AddRelativeForce(moveDirection * moveForce, ForceMode.Force);
+        Vector3 localInput = new Vector3(rollInput, 0f, pitchInput).normalized;
 
-        // Calcul de l'inclinaison du drone en fonction des mouvements
-        currentRoll = Mathf.Lerp(currentRoll, -rollInput * maxTiltAngle, Time.deltaTime * tiltSpeed);
-        currentPitch = Mathf.Lerp(currentPitch, pitchInput * maxTiltAngle, Time.deltaTime * tiltSpeed);
+        if (localInput.magnitude > 0.05f)
+        {
+            rb.AddRelativeForce(localInput * moveForce, ForceMode.Force);
+        }
     }
 
-    // Contrôle de la rotation du drone (Yaw)
     void HandleRotation()
     {
-        float yawInput = Input.GetAxis("Yaw");  // Attendu entre -1 et 1
-        if (Mathf.Abs(yawInput) > 0.1f)
+        float yawInput = Input.GetAxis("Yaw"); // rotation gauche/droite
+        if (Mathf.Abs(yawInput) > 0.05f)
         {
-            currentYaw += yawInput * rotationTorque * Time.deltaTime;
+            currentYaw += yawInput * rotationSpeed * Time.fixedDeltaTime;
         }
 
-        // Appliquer la rotation autour de l'axe Y (Yaw)
-        Quaternion targetRotation = Quaternion.Euler(currentPitch, currentYaw, currentRoll);
-        rb.MoveRotation(targetRotation);
+        // Clamp Yaw dans une plage raisonnable (sinon ça dépasse les limites flottantes)
+        if (currentYaw > 360f) currentYaw -= 360f;
+        else if (currentYaw < -360f) currentYaw += 360f;
     }
 
-    // Appliquer l'inclinaison calculée pour simuler un mouvement réaliste
     void ApplyTilt()
     {
-        // On applique un "tilt" progressif en fonction des mouvements du drone
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(currentPitch, currentYaw, currentRoll), Time.deltaTime * tiltSpeed);
+        float pitchInput = Input.GetAxis("Pitch");
+        float rollInput = Input.GetAxis("Roll");
+
+        float targetPitch = Mathf.LerpAngle(transform.eulerAngles.x, pitchInput * maxTiltAngle, Time.deltaTime * tiltLerpSpeed);
+        float targetRoll = Mathf.LerpAngle(transform.eulerAngles.z, -rollInput * maxTiltAngle, Time.deltaTime * tiltLerpSpeed);
+
+        Quaternion targetRotation = Quaternion.Euler(targetPitch, currentYaw, targetRoll);
+        rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, Time.deltaTime * tiltLerpSpeed));
     }
 
-    // Limiter la vitesse du drone pour éviter qu'il ne se déplace trop vite
     void LimitSpeed()
     {
         if (rb.linearVelocity.magnitude > maxSpeed)
