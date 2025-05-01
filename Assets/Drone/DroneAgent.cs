@@ -1,62 +1,169 @@
-using UnityEngine;
+using System.Collections.Generic;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
+using UnityEngine;
 
+[RequireComponent(typeof(DroneContinuousMovement))]
 public class DroneAgent : Agent
 {
+    [Header("Target and environment")]
+    public Transform target;
+    public List<Transform> defenders;
+    public Transform[] obstacles;
+    public float maxStepTime = 500f;
+
+    [Header("References")]
+    private DroneContinuousMovement movement;
     private Rigidbody rb;
 
-    public float moveForce = 5f;
-    public float liftForce = 8f;
+    [Header("Rewards")]
+    public float collisionPenalty = -1f;
+    public float defenderPenalty = -0.5f;
+    public float proximityReward = 0.003f;
+    public float goalReward = 1.5f;
+    public float timePenalty = -0.001f;
 
-    // Start is called before the first frame update
+    private Vector3 startingPosition;
+    private Quaternion startingRotation;
+
     public override void Initialize()
     {
+        movement = GetComponent<DroneContinuousMovement>();
         rb = GetComponent<Rigidbody>();
+        startingPosition = transform.position;
+        startingRotation = transform.rotation;
     }
 
-    // Méthode qui s'occupe de l'entrée heuristique
-    public override void Heuristic(in ActionBuffers actionsOut)
-    {
-        ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
+    public TrainingArea trainingArea;
 
-        // Exemple : contrôler la montée/descente, le mouvement horizontal et la rotation
-        continuousActions[0] = Input.GetKey(KeyCode.Space) ? 1 : 0; // 1 pour montée, 0 pour descente
-        continuousActions[1] = Input.GetAxis("Horizontal"); // Déplacement gauche/droite
-        continuousActions[2] = Input.GetAxis("Vertical"); // Déplacement avant/arrière
-        continuousActions[3] = Input.GetAxis("Yaw"); // Rotation (yaw)
+    public override void OnEpisodeBegin()
+    {
+        if (trainingArea != null)
+        {
+            trainingArea.ResetScene();
+        }
+
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+    }
+
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        // Position relative à la cible
+        Vector3 relativeTarget = target.position - transform.position;
+        sensor.AddObservation(relativeTarget);
+
+        // Vitesse du drone
+        sensor.AddObservation(rb.linearVelocity);
+
+        // Vecteur de direction (avant local du drone)
+        sensor.AddObservation(transform.forward);
+
+        // Défenseurs (positions relatives)
+        foreach (Transform defender in defenders)
+        {
+            sensor.AddObservation(defender.position - transform.position);
+        }
+
+        // Obstacle le plus proche
+        Transform closestObstacle = GetClosestObstacle();
+        if (closestObstacle != null)
+        {
+            sensor.AddObservation(closestObstacle.position - transform.position);
+        }
+        else
+        {
+            sensor.AddObservation(Vector3.zero);
+        }
     }
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-        float moveX = actions.ContinuousActions[1]; // Déplacement horizontal (gauche/droite)
-        float moveZ = actions.ContinuousActions[2]; // Déplacement avant/arrière
-        float yaw = actions.ContinuousActions[3];   // Rotation (yaw)
+        // Actions continues : Vertical, Horizontal, Rotation, Ascend
+        float vertical = Mathf.Clamp(actions.ContinuousActions[0], -1f, 1f);
+        float horizontal = Mathf.Clamp(actions.ContinuousActions[1], -1f, 1f);
+        float rotate = Mathf.Clamp(actions.ContinuousActions[2], -1f, 1f);
+        float ascend = Mathf.Clamp(actions.ContinuousActions[3], -1f, 1f);
 
-        // Appliquer la force pour déplacer le drone
-        rb.AddForce(new Vector3(moveX, 0, moveZ) * moveForce);
+        // Mapping des inputs vers ton script de mouvement
+        InputManager.SetInput(vertical, horizontal, rotate, ascend);
 
-        // Appliquer la rotation
-        rb.AddTorque(Vector3.up * yaw * 0.1f);
+        // Récompense basée sur la proximité de la cible
+        float distanceToTarget = Vector3.Distance(transform.position, target.position);
+        AddReward(proximityReward * (1f / (distanceToTarget + 1f)));
 
-        // Appliquer la montée/descente
-        if (actions.ContinuousActions[0] > 0.1f) // Pour la montée
+        // Pénalité de temps
+        AddReward(timePenalty);
+
+        // Limite de temps
+        if (StepCount > maxStepTime)
         {
-            rb.AddForce(Vector3.up * liftForce);
-        }
-        else if (actions.ContinuousActions[0] < -0.1f) // Pour descendre
-        {
-            rb.AddForce(Vector3.down * liftForce);
+            EndEpisode();
         }
     }
 
-    // Méthode pour collecter les observations du drone
-    public override void CollectObservations(VectorSensor sensor)
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
-        // Ajouter les observations : la position et la vitesse
-        sensor.AddObservation(transform.position); // Position du drone (x, y, z)
-        sensor.AddObservation(rb.linearVelocity);        // Vitesse du drone (vx, vy, vz)
-        sensor.AddObservation(transform.rotation.eulerAngles); // Rotation du drone (pitch, yaw, roll)
+        var contActions = actionsOut.ContinuousActions;
+        contActions[0] = Input.GetAxis("Vertical");  // Avant / Arrière
+        contActions[1] = Input.GetAxis("Horizontal"); // Gauche / Droite
+        contActions[2] = Input.GetKey(KeyCode.J) ? -1f : Input.GetKey(KeyCode.L) ? 1f : 0f; // Rotation
+        contActions[3] = Input.GetKey(KeyCode.I) ? 1f : Input.GetKey(KeyCode.K) ? -1f : 0f; // Monter / Descendre
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Target"))
+        {
+            AddReward(goalReward);
+            EndEpisode();
+        }
+        else if (other.CompareTag("Defender"))
+        {
+            AddReward(defenderPenalty);
+            EndEpisode();
+        }
+        else if (other.CompareTag("Obstacle"))
+        {
+            AddReward(collisionPenalty);
+            EndEpisode();
+        }
+    }
+
+    private Transform GetClosestObstacle()
+    {
+        Transform closest = null;
+        float minDistance = float.MaxValue;
+
+        foreach (Transform obs in obstacles)
+        {
+            float dist = Vector3.Distance(transform.position, obs.position);
+            if (dist < minDistance)
+            {
+                minDistance = dist;
+                closest = obs;
+            }
+        }
+
+        return closest;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        if (target != null)
+            Gizmos.DrawLine(transform.position, target.position);
+
+        if (defenders != null)
+        {
+            Gizmos.color = Color.blue;
+            foreach (var def in defenders)
+            {
+                if (def != null)
+                    Gizmos.DrawLine(transform.position, def.position);
+            }
+        }
     }
 }
