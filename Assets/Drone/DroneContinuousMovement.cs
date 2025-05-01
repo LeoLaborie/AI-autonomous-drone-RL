@@ -24,7 +24,7 @@ public class DroneContinuousMovement : MonoBehaviour
             new Vector3(tiltAmountForward, currentYRotation, tiltAmountSideways)
         );
 
-        InputManager.ResetInput(); // Reset input after each frame
+        // InputManager.ResetInput(); // Reset input after each frame
     }
 
     public float upForce;

@@ -15,7 +15,6 @@ public static class InputManager
         Ascend = ascend;
     }
 
-    // Optionnel : remettre à zéro à chaque frame si besoin
     public static void ResetInput()
     {
         Vertical = 0f;

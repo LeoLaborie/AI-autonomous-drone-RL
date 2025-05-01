@@ -105,13 +105,24 @@ public class DroneAgent : Agent
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
-    {
-        var contActions = actionsOut.ContinuousActions;
-        contActions[0] = Input.GetAxis("Vertical");  // Avant / Arrière
-        contActions[1] = Input.GetAxis("Horizontal"); // Gauche / Droite
-        contActions[2] = Input.GetKey(KeyCode.J) ? -1f : Input.GetKey(KeyCode.L) ? 1f : 0f; // Rotation
-        contActions[3] = Input.GetKey(KeyCode.I) ? 1f : Input.GetKey(KeyCode.K) ? -1f : 0f; // Monter / Descendre
-    }
+{
+    var contActions = actionsOut.ContinuousActions;
+
+    // Récupérer les entrées clavier
+    float vertical = Input.GetAxis("Vertical");  // Avant / Arrière
+    float horizontal = Input.GetAxis("Horizontal"); // Gauche / Droite
+    float rotate = Input.GetKey(KeyCode.J) ? -1f : Input.GetKey(KeyCode.L) ? 1f : 0f; // Rotation
+    float ascend = Input.GetKey(KeyCode.I) ? 1f : Input.GetKey(KeyCode.K) ? -1f : 0f; // Monter / Descendre
+
+    // Mapper les entrées dans les actions
+    contActions[0] = vertical;
+    contActions[1] = horizontal;
+    contActions[2] = rotate;
+    contActions[3] = ascend;
+
+    // Transmettre les entrées au InputManager
+    InputManager.SetInput(vertical, horizontal, rotate, ascend);
+}
 
     private void OnTriggerEnter(Collider other)
     {
