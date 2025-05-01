@@ -1,0 +1,42 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1746125648",
+        "python_version": "3.10.1 (tags/v3.10.1:2cd268a, Dec  6 2021, 19:10:37) [MSC v.1929 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\Users\\L\u00e9o\\Drone hunting ML agent\\venv\\Scripts\\mlagents-learn config/multiagent_config.yaml --run-id=multiagents_002",
+        "mlagents_version": "1.1.0",
+        "mlagents_envs_version": "1.1.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.7.0+cpu",
+        "numpy_version": "1.23.5",
+        "end_time_seconds": "1746125652"
+    },
+    "total": 3.2967362000001685,
+    "count": 1,
+    "self": 0.00650290000021414,
+    "children": {
+        "run_training.setup": {
+            "total": 0.06812669999999343,
+            "count": 1,
+            "self": 0.06812669999999343
+        },
+        "TrainerController.start_learning": {
+            "total": 3.222106599999961,
+            "count": 1,
+            "self": 8.319999983541493e-05,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 3.222008100000039,
+                    "count": 1,
+                    "self": 3.222008100000039
+                },
+                "TrainerController._save_models": {
+                    "total": 1.5300000086426735e-05,
+                    "count": 1,
+                    "self": 1.5300000086426735e-05
+                }
+            }
+        }
+    }
+}
