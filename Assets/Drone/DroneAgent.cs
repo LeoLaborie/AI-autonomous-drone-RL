@@ -7,11 +7,11 @@ using UnityEngine;
 [RequireComponent(typeof(DroneContinuousMovement))]
 public class DroneAgent : Agent
 {
-    [Header("Target and environment")]
+    [Header("Target and environment")] 
     public Transform target;
     public List<Transform> defenders;
     public Transform[] obstacles;
-    public float maxStepTime = 500f;
+    public float maxStepTime = 10000f;
 
     [Header("References")]
     private DroneContinuousMovement movement;
@@ -24,15 +24,15 @@ public class DroneAgent : Agent
     public float goalReward = 1.5f;
     public float timePenalty = -0.001f;
 
-    private Vector3 startingPosition;
-    private Quaternion startingRotation;
+    // private Vector3 startingPosition;
+    // private Quaternion startingRotation;
 
     public override void Initialize()
     {
         movement = GetComponent<DroneContinuousMovement>();
         rb = GetComponent<Rigidbody>();
-        startingPosition = transform.position;
-        startingRotation = transform.rotation;
+        // startingPosition = transform.position;
+        // startingRotation = transform.rotation;
     }
 
     public TrainingArea trainingArea;
@@ -90,6 +90,9 @@ public class DroneAgent : Agent
         // Mapping des inputs vers ton script de mouvement
         InputManager.SetInput(vertical, horizontal, rotate, ascend);
 
+        // Debug.Log($"[{name}] Actions => Vertical: {vertical:F2}, Horizontal: {horizontal:F2}, Rotate: {rotate:F2}, Ascend: {ascend:F2}");
+
+        
         // Récompense basée sur la proximité de la cible
         float distanceToTarget = Vector3.Distance(transform.position, target.position);
         AddReward(proximityReward * (1f / (distanceToTarget + 1f)));

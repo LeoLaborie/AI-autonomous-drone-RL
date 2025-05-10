@@ -8,7 +8,7 @@ using UnityEngine;
 public class DefenderAgent : Agent
 {
     [Header("Target and enemy")]
-    public Transform target; // La cible à protéger
+    public Transform target; // La cible à protéger 
     public Transform enemyDrone; // Le drone attaquant
 
     [Header("Team and environment")]
@@ -21,7 +21,7 @@ public class DefenderAgent : Agent
     public float collisionPenalty = -1f;
     public float enemyGoalPenalty = -1f;
     public float timePenalty = -0.001f;
-
+    public float maxStepTime = 10000f;
     private DroneContinuousMovement movement;
     private Rigidbody rb;
 
@@ -29,16 +29,21 @@ public class DefenderAgent : Agent
     {
         movement = GetComponent<DroneContinuousMovement>();
         rb = GetComponent<Rigidbody>();
+        
+        // startingPosition = transform.position;
+        // startingRotation = transform.rotation;
     }
 
     public override void OnEpisodeBegin()
-    {
+    {   
+        
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
     }
 
     public override void CollectObservations(VectorSensor sensor)
-    {
+    {   
+        // Debug.Log("COllectObservations");
         // Position relative du drone ennemi
         Vector3 relativeEnemyPosition = enemyDrone.position - transform.position;
         sensor.AddObservation(relativeEnemyPosition);
@@ -88,12 +93,22 @@ public class DefenderAgent : Agent
         // Mapping des inputs vers le script de mouvement
         InputManager.SetInput(vertical, horizontal, rotate, ascend);
 
+        // Debug.Log($"[{name}] Actions => Vertical: {vertical:F2}, Horizontal: {horizontal:F2}, Rotate: {rotate:F2}, Ascend: {ascend:F2}");
+
+
         // Récompense basée sur la proximité du drone ennemi
         float distanceToEnemy = Vector3.Distance(transform.position, enemyDrone.position);
         AddReward(proximityReward * (1f / (distanceToEnemy + 1f)));
 
         // Pénalité de temps
         AddReward(timePenalty);
+
+        // Limite de temps
+        if (StepCount > maxStepTime)
+        {
+            EndEpisode();
+        }
+
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

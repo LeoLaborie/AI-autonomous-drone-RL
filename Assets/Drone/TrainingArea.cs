@@ -50,20 +50,21 @@ public class TrainingArea : MonoBehaviour
         foreach (Transform defender in dronesDefensifs)
         {
             // Remise à zéro du Rigidbody
-            if (defenderRigidbodies.ContainsKey(defender))
-            {
-                Rigidbody rb = defenderRigidbodies[defender];
-                rb.linearVelocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
-            }
+            // if (defenderRigidbodies.ContainsKey(defender))
+            // {
+            //     Rigidbody rb = defenderRigidbodies[defender];
+            //     rb.linearVelocity = Vector3.zero;
+            //     rb.angularVelocity = Vector3.zero;
+            // }
 
-            // Réinitialise la rotation
-            defender.rotation = Quaternion.identity;
+            // // Réinitialise la rotation
+            // defender.rotation = Quaternion.identity;
 
             // Redémarre l'agent ML
             var agent = defender.GetComponent<DefenderAgent>();
             if (agent != null)
             {
+                
                 agent.EndEpisode();
             }
         }
