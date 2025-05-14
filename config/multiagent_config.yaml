@@ -13,15 +13,15 @@ behaviors:
 
     network_settings:
       normalize: true
-      hidden_units: 128
-      num_layers: 2
+      hidden_units: 24  
+      num_layers: 3     
 
     reward_signals:
       extrinsic:
         gamma: 0.99
         strength: 1.0
 
-    max_steps: 1.0e6
+    max_steps: 1.0e9
     time_horizon: 64
     summary_freq: 10000
 
@@ -39,14 +39,14 @@ behaviors:
 
     network_settings:
       normalize: true
-      hidden_units: 128
-      num_layers: 2
+      hidden_units: 24
+      num_layers: 3
 
     reward_signals:
       extrinsic:
         gamma: 0.99
         strength: 1.0
 
-    max_steps: 1.0e6
+    max_steps: 1.0e9
     time_horizon: 64
     summary_freq: 10000

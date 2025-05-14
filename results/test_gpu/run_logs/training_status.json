@@ -1,0 +1,51 @@
+{
+    "DroneDefender": {
+        "checkpoints": [
+            {
+                "steps": 62754,
+                "file_path": "results\\test_gpu\\DroneDefender\\DroneDefender-62754.onnx",
+                "reward": -639.6954268543493,
+                "creation_time": 1746963529.7194874,
+                "auxillary_file_paths": [
+                    "results\\test_gpu\\DroneDefender\\DroneDefender-62754.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 62754,
+            "file_path": "results\\test_gpu\\DroneDefender.onnx",
+            "reward": -639.6954268543493,
+            "creation_time": 1746963529.7194874,
+            "auxillary_file_paths": [
+                "results\\test_gpu\\DroneDefender\\DroneDefender-62754.pt"
+            ]
+        }
+    },
+    "DroneAttacker": {
+        "checkpoints": [
+            {
+                "steps": 10434,
+                "file_path": "results\\test_gpu\\DroneAttacker\\DroneAttacker-10434.onnx",
+                "reward": -96.457568359375,
+                "creation_time": 1746963529.7945845,
+                "auxillary_file_paths": [
+                    "results\\test_gpu\\DroneAttacker\\DroneAttacker-10434.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 10434,
+            "file_path": "results\\test_gpu\\DroneAttacker.onnx",
+            "reward": -96.457568359375,
+            "creation_time": 1746963529.7945845,
+            "auxillary_file_paths": [
+                "results\\test_gpu\\DroneAttacker\\DroneAttacker-10434.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.0+cu118"
+    }
+}

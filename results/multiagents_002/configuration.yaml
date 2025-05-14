@@ -38,7 +38,7 @@ behaviors:
     init_path: null
     keep_checkpoints: 5
     even_checkpoints: false
-    max_steps: 1000000
+    max_steps: 1000000000
     time_horizon: 64
     summary_freq: 10000
     threaded: false
@@ -82,7 +82,7 @@ behaviors:
     init_path: null
     keep_checkpoints: 5
     even_checkpoints: false
-    max_steps: 1000000
+    max_steps: 1000000000
     time_horizon: 64
     summary_freq: 10000
     threaded: false
@@ -106,14 +106,14 @@ engine_settings:
   time_scale: 20
   target_frame_rate: -1
   capture_frame_rate: 60
-  no_graphics: false
+  no_graphics: true
   no_graphics_monitor: false
 environment_parameters: null
 checkpoint_settings:
   run_id: multiagents_002
   initialize_from: null
   load_model: false
-  resume: false
+  resume: true
   force: false
   train_model: false
   inference: false

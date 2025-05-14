@@ -1,0 +1,56 @@
+{
+    "DroneFlight": {
+        "checkpoints": [
+            {
+                "steps": 15978,
+                "file_path": "results\\phase2_target_002\\DroneFlight\\DroneFlight-15978.onnx",
+                "reward": -2.9657165784610817,
+                "creation_time": 1747167441.178207,
+                "auxillary_file_paths": [
+                    "results\\phase2_target_002\\DroneFlight\\DroneFlight-15978.pt"
+                ]
+            },
+            {
+                "steps": 33388,
+                "file_path": "results\\phase2_target_002\\DroneFlight\\DroneFlight-33388.onnx",
+                "reward": -2.9523025159206657,
+                "creation_time": 1747167713.5312324,
+                "auxillary_file_paths": [
+                    "results\\phase2_target_002\\DroneFlight\\DroneFlight-33388.pt"
+                ]
+            },
+            {
+                "steps": 63221,
+                "file_path": "results\\phase2_target_002\\DroneFlight\\DroneFlight-63221.onnx",
+                "reward": -2.9328844079683565,
+                "creation_time": 1747168266.5155938,
+                "auxillary_file_paths": [
+                    "results\\phase2_target_002\\DroneFlight\\DroneFlight-63221.pt"
+                ]
+            },
+            {
+                "steps": 131528,
+                "file_path": "results\\phase2_target_002\\DroneFlight\\DroneFlight-131528.onnx",
+                "reward": -2.9320042807488673,
+                "creation_time": 1747169542.807161,
+                "auxillary_file_paths": [
+                    "results\\phase2_target_002\\DroneFlight\\DroneFlight-131528.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 131528,
+            "file_path": "results\\phase2_target_002\\DroneFlight.onnx",
+            "reward": -2.9320042807488673,
+            "creation_time": 1747169542.807161,
+            "auxillary_file_paths": [
+                "results\\phase2_target_002\\DroneFlight\\DroneFlight-131528.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.0+cu118"
+    }
+}
