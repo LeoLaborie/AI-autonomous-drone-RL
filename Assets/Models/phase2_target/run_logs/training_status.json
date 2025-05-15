@@ -2,58 +2,58 @@
     "DroneFlight": {
         "checkpoints": [
             {
-                "steps": 3999992,
-                "file_path": "results\\phase2_target\\DroneFlight\\DroneFlight-3999992.onnx",
-                "reward": 989.9147542417049,
-                "creation_time": 1747242419.093534,
+                "steps": 6135533,
+                "file_path": "results\\phase2_target\\DroneFlight\\DroneFlight-6135533.onnx",
+                "reward": 8863.968865447574,
+                "creation_time": 1747318396.694526,
                 "auxillary_file_paths": [
-                    "results\\phase2_target\\DroneFlight\\DroneFlight-3999992.pt"
+                    "results\\phase2_target\\DroneFlight\\DroneFlight-6135533.pt"
                 ]
             },
             {
-                "steps": 4499972,
-                "file_path": "results\\phase2_target\\DroneFlight\\DroneFlight-4499972.onnx",
-                "reward": 720.2551131589072,
-                "creation_time": 1747246261.8869166,
+                "steps": 6499947,
+                "file_path": "results\\phase2_target\\DroneFlight\\DroneFlight-6499947.onnx",
+                "reward": 5066.63779296875,
+                "creation_time": 1747321257.226868,
                 "auxillary_file_paths": [
-                    "results\\phase2_target\\DroneFlight\\DroneFlight-4499972.pt"
+                    "results\\phase2_target\\DroneFlight\\DroneFlight-6499947.pt"
                 ]
             },
             {
-                "steps": 4999960,
-                "file_path": "results\\phase2_target\\DroneFlight\\DroneFlight-4999960.onnx",
-                "reward": 718.4554914395724,
-                "creation_time": 1747250087.9584382,
+                "steps": 6999983,
+                "file_path": "results\\phase2_target\\DroneFlight\\DroneFlight-6999983.onnx",
+                "reward": 9164.008448674129,
+                "creation_time": 1747325156.8605864,
                 "auxillary_file_paths": [
-                    "results\\phase2_target\\DroneFlight\\DroneFlight-4999960.pt"
+                    "results\\phase2_target\\DroneFlight\\DroneFlight-6999983.pt"
                 ]
             },
             {
-                "steps": 5499963,
-                "file_path": "results\\phase2_target\\DroneFlight\\DroneFlight-5499963.onnx",
-                "reward": 896.2640874220265,
-                "creation_time": 1747253933.4790726,
+                "steps": 7499984,
+                "file_path": "results\\phase2_target\\DroneFlight\\DroneFlight-7499984.onnx",
+                "reward": 4740.152603149414,
+                "creation_time": 1747329054.8289075,
                 "auxillary_file_paths": [
-                    "results\\phase2_target\\DroneFlight\\DroneFlight-5499963.pt"
+                    "results\\phase2_target\\DroneFlight\\DroneFlight-7499984.pt"
                 ]
             },
             {
-                "steps": 5554707,
-                "file_path": "results\\phase2_target\\DroneFlight\\DroneFlight-5554707.onnx",
-                "reward": 849.783701903545,
-                "creation_time": 1747254365.2621396,
+                "steps": 7708635,
+                "file_path": "results\\phase2_target\\DroneFlight\\DroneFlight-7708635.onnx",
+                "reward": 9155.230921427408,
+                "creation_time": 1747330692.5112607,
                 "auxillary_file_paths": [
-                    "results\\phase2_target\\DroneFlight\\DroneFlight-5554707.pt"
+                    "results\\phase2_target\\DroneFlight\\DroneFlight-7708635.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 5554707,
+            "steps": 7708635,
             "file_path": "results\\phase2_target\\DroneFlight.onnx",
-            "reward": 849.783701903545,
-            "creation_time": 1747254365.2621396,
+            "reward": 9155.230921427408,
+            "creation_time": 1747330692.5112607,
             "auxillary_file_paths": [
-                "results\\phase2_target\\DroneFlight\\DroneFlight-5554707.pt"
+                "results\\phase2_target\\DroneFlight\\DroneFlight-7708635.pt"
             ]
         }
     },

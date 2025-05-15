@@ -92,34 +92,34 @@ public class DroneAgentPhase2 : Agent
 
         // Récompense de proximité
         float distanceToTarget = Vector3.Distance(transform.position, target.position);
-        float proximityReward = 0.1f / (distanceToTarget + 1f);
+        // float proximityReward = 0.01f / (distanceToTarget + 1f);
         // AddReward(proximityReward);
 
         float currentDistance = Vector3.Distance(transform.position, target.position);
-        float delta = previousDistanceToTarget - currentDistance;
+        // float delta = previousDistanceToTarget - currentDistance;
 
-        if (delta > 0f)
-        {
-            // Le drone s'est rapproché → récompense
-            AddReward(0.1f * delta);
-            AddReward(proximityReward);
-        }
-        else
-        {
-            // Le drone s'est éloigné → pénalité
-            AddReward(0.1f * delta); // delta < 0 donc pénalité
-            AddReward(-1f * proximityReward);
-        }
+        // if (delta > 0f)
+        // {
+        //     // Le drone s'est rapproché → récompense
+        //     // AddReward(0.001f * delta);
+        //     // AddReward(proximityReward);
+        // }
+        // else
+        // {
+        //     // Le drone s'est éloigné → pénalité
+        //     AddReward(0.1f * delta); // delta < 0 donc pénalité
+        //     // AddReward(-1f * proximityReward);
+        // }
 
         previousDistanceToTarget = currentDistance;
 
 
         //  pénalité de temps
-        AddReward(-0.005f);
+        // AddReward(-0.001f);
 
         if (StepCount > maxStepTime)
         {
-            // AddReward(-3f);
+            AddReward(-1f);
             EndEpisode();
         }
 
@@ -140,7 +140,7 @@ public class DroneAgentPhase2 : Agent
     {
         if (other.CompareTag("Target"))
         {
-            AddReward(+1000f);
+            AddReward(+1f - StepCount/10000f);
             EndEpisode();
         }
 
@@ -148,7 +148,7 @@ public class DroneAgentPhase2 : Agent
         {
             if (other == obs)
             {
-                AddReward(-10f);
+                AddReward(-1f - StepCount/10000f);
                 EndEpisode();
                 break;
             }
