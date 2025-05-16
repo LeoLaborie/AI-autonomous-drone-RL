@@ -43,20 +43,15 @@ public class DefenderAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {   
-        // Debug.Log("COllectObservations");
-        // Position relative du drone ennemi
-        Vector3 relativeEnemyPosition = enemyDrone.position - transform.position;
-        sensor.AddObservation(relativeEnemyPosition);
 
-        // Position relative de la cible
-        Vector3 relativeTargetPosition = target.position - transform.position;
-        sensor.AddObservation(relativeTargetPosition);
-
-        // Vitesse propre du défenseur
         sensor.AddObservation(rb.linearVelocity);
-
-        // Vecteur de direction (avant local du défenseur)
         sensor.AddObservation(transform.forward);
+        sensor.AddObservation(enemyDrone.position - transform.position);
+
+        var (closestPoint, distance, obs) = GetClosestObstaclePoint();
+        sensor.AddObservation(closestPoint - transform.position);
+
+        sensor.AddObservation(target.position - transform.position);
 
         // Positions, vitesses et directions des autres défenseurs
         foreach (Transform defender in otherDefenders)
@@ -70,11 +65,7 @@ public class DefenderAgent : Agent
                 sensor.AddObservation(defender.forward);
             }
         }
-
-        // Position relative des obstacles
-        var (closestPoint, distance, obs) = GetClosestObstaclePoint();
-
-        sensor.AddObservation(closestPoint - transform.position);
+        
 
     }
 
@@ -127,6 +118,8 @@ public class DefenderAgent : Agent
     InputManager.SetInput(vertical, horizontal, rotate, ascend);
 }
 
+
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Attacker"))
@@ -134,42 +127,39 @@ public class DefenderAgent : Agent
             AddReward(collisionReward);
             EndEpisode();
         }
-        else if (other.CompareTag("Obstacle"))
+        else if (other.CompareTag("Obstacle") || other.CompareTag("Defender") || other.CompareTag("Target"))
         {
             AddReward(collisionPenalty);
             EndEpisode();
         }
-        else if (other.CompareTag("Target"))
-        {
-            AddReward(enemyGoalPenalty);
-            EndEpisode();
-        }
     }
+
+
     private (Vector3 point, float distance, Transform obstacle) GetClosestObstaclePoint()
-{
-    Vector3 closestPoint = Vector3.zero;
-    float minDistance = float.MaxValue;
-    Transform closestObstacle = null;
-
-    foreach (Transform obs in obstacles)
     {
-        Collider col = obs.GetComponent<Collider>();
-        if (col != null)
-        {
-            Vector3 point = col.ClosestPoint(transform.position);
-            float dist = Vector3.Distance(transform.position, point);
+        Vector3 closestPoint = Vector3.zero;
+        float minDistance = float.MaxValue;
+        Transform closestObstacle = null;
 
-            if (dist < minDistance)
+        foreach (Transform obs in obstacles)
+        {
+            Collider col = obs.GetComponent<Collider>();
+            if (col != null)
             {
-                minDistance = dist;
-                closestPoint = point;
-                closestObstacle = obs;
+                Vector3 point = col.ClosestPoint(transform.position);
+                float dist = Vector3.Distance(transform.position, point);
+
+                if (dist < minDistance)
+                {
+                    minDistance = dist;
+                    closestPoint = point;
+                    closestObstacle = obs;
+                }
             }
         }
-    }
 
-    return (closestPoint, minDistance, closestObstacle);
-}
+        return (closestPoint, minDistance, closestObstacle);
+    }
 
 }
 

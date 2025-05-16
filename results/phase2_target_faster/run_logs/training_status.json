@@ -2,22 +2,22 @@
     "DroneFlight": {
         "checkpoints": [
             {
-                "steps": 99285,
-                "file_path": "results\\phase2_target_faster\\DroneFlight\\DroneFlight-99285.onnx",
-                "reward": null,
-                "creation_time": 1747335735.0666704,
+                "steps": 102542,
+                "file_path": "results\\phase2_target_faster\\DroneFlight\\DroneFlight-102542.onnx",
+                "reward": 632.2320725953905,
+                "creation_time": 1747343084.9663093,
                 "auxillary_file_paths": [
-                    "results\\phase2_target_faster\\DroneFlight\\DroneFlight-99285.pt"
+                    "results\\phase2_target_faster\\DroneFlight\\DroneFlight-102542.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 99285,
+            "steps": 102542,
             "file_path": "results\\phase2_target_faster\\DroneFlight.onnx",
-            "reward": null,
-            "creation_time": 1747335735.0666704,
+            "reward": 632.2320725953905,
+            "creation_time": 1747343084.9663093,
             "auxillary_file_paths": [
-                "results\\phase2_target_faster\\DroneFlight\\DroneFlight-99285.pt"
+                "results\\phase2_target_faster\\DroneFlight\\DroneFlight-102542.pt"
             ]
         }
     },

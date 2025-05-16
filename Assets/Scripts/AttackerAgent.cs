@@ -51,28 +51,22 @@ public class DroneAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // Position relative à la cible
-        Vector3 relativeTarget = target.position - transform.position;
-        sensor.AddObservation(relativeTarget);
+
 
         
-
-        // Vitesse du drone
         sensor.AddObservation(rb.linearVelocity);
-
-        // Vecteur de direction (avant local du drone)
         sensor.AddObservation(transform.forward);
+        sensor.AddObservation(target.position - transform.position);
+
+        var (closestPoint, distance, obs) = GetClosestObstaclePoint();
+        sensor.AddObservation(closestPoint - transform.position);
 
         // Défenseurs (positions relatives)
         foreach (Transform defender in defenders)
         {
             sensor.AddObservation(defender.position - transform.position);
         }
-
-        // Obstacle le plus proche
-        var (closestPoint, distance, obs) = GetClosestObstaclePoint();
-
-        sensor.AddObservation(closestPoint - transform.position);
+        
     }
 
     public override void OnActionReceived(ActionBuffers actions)
