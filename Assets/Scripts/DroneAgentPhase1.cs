@@ -41,15 +41,21 @@ public class DroneAgentPhase1 : Agent
     }
 
     public override void CollectObservations(VectorSensor sensor)
-    {
-        sensor.AddObservation(rb.linearVelocity); // 3
-        sensor.AddObservation(transform.forward); // 3
-        sensor.AddObservation(transform.position - zoneCenter.position); // 3
-        var (closestPoint, distance, col) = GetClosestObstaclePoint();
-        sensor.AddObservation(closestPoint - transform.position); // position relative
-        
+{
+    sensor.AddObservation(rb.linearVelocity);                      // 3
+    sensor.AddObservation(transform.forward);                      // 3
+    sensor.AddObservation(transform.position - zoneCenter.position); // 3
+    var (closestPoint, distance, col) = GetClosestObstaclePoint();
+    sensor.AddObservation(closestPoint - transform.position);      // 3
 
+    for (int i = 0; i < 48; i++)
+    {
+        sensor.AddObservation(0f);
     }
+
+    
+}
+
 
     public override void OnActionReceived(ActionBuffers actions)
     {

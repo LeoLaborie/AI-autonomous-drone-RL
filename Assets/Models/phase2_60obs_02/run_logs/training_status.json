@@ -1,0 +1,56 @@
+{
+    "DroneFlight": {
+        "checkpoints": [
+            {
+                "steps": 14855,
+                "file_path": "results\\phase2_60obs_02\\DroneFlight\\DroneFlight-14855.onnx",
+                "reward": 293.9444807767868,
+                "creation_time": 1747430168.643616,
+                "auxillary_file_paths": [
+                    "results\\phase2_60obs_02\\DroneFlight\\DroneFlight-14855.pt"
+                ]
+            },
+            {
+                "steps": 499994,
+                "file_path": "results\\phase2_60obs_02\\DroneFlight\\DroneFlight-499994.onnx",
+                "reward": 9711.233047485352,
+                "creation_time": 1747434073.5857937,
+                "auxillary_file_paths": [
+                    "results\\phase2_60obs_02\\DroneFlight\\DroneFlight-499994.pt"
+                ]
+            },
+            {
+                "steps": 999977,
+                "file_path": "results\\phase2_60obs_02\\DroneFlight\\DroneFlight-999977.onnx",
+                "reward": 9736.892333984375,
+                "creation_time": 1747438042.5149014,
+                "auxillary_file_paths": [
+                    "results\\phase2_60obs_02\\DroneFlight\\DroneFlight-999977.pt"
+                ]
+            },
+            {
+                "steps": 1008425,
+                "file_path": "results\\phase2_60obs_02\\DroneFlight\\DroneFlight-1008425.onnx",
+                "reward": 9720.68376159668,
+                "creation_time": 1747438115.6502213,
+                "auxillary_file_paths": [
+                    "results\\phase2_60obs_02\\DroneFlight\\DroneFlight-1008425.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1008425,
+            "file_path": "results\\phase2_60obs_02\\DroneFlight.onnx",
+            "reward": 9720.68376159668,
+            "creation_time": 1747438115.6502213,
+            "auxillary_file_paths": [
+                "results\\phase2_60obs_02\\DroneFlight\\DroneFlight-1008425.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.0+cu118"
+    }
+}

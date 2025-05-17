@@ -13,7 +13,7 @@ behaviors:
 
     network_settings:
       normalize: true
-      hidden_units: 24
+      hidden_units: 32
       num_layers: 3
 
     reward_signals:
@@ -23,4 +23,4 @@ behaviors:
 
     max_steps: 1.0e9
     time_horizon: 64
-    summary_freq: 10000
+    summary_freq: 5000

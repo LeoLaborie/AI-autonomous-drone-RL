@@ -56,6 +56,11 @@ public class DroneAgentPhase2 : Agent
         sensor.AddObservation(target.position - transform.position); // 3
         var (closestPoint, distance, col) = GetClosestObstaclePoint();
         sensor.AddObservation(closestPoint - transform.position); // 3
+
+        for (int i = 0; i < 48; i++)
+            {
+                sensor.AddObservation(0f);
+            }
     }
 
     private (Vector3 point, float distance, Collider obstacle) GetClosestObstaclePoint()
@@ -93,25 +98,25 @@ public class DroneAgentPhase2 : Agent
         InputManager.SetInput(vertical, horizontal, rotate, ascend);
 
         // Récompense de proximité
-        // float distanceToTarget = Vector3.Distance(transform.position, target.position);
-        // float proximityReward = 0.001f / (distanceToTarget + 1f);
-        // // AddReward(proximityReward);
+        float distanceToTarget = Vector3.Distance(transform.position, target.position);
+        float proximityReward = (1f - (Mathf.Pow(distanceToTarget,2))/4900);
+        AddReward(proximityReward);
 
-        float currentDistance = Vector3.Distance(transform.position, target.position);
-        float delta = previousDistanceToTarget - currentDistance;
+        // float currentDistance = Vector3.Distance(transform.position, target.position);
+        // float delta = previousDistanceToTarget - currentDistance;
 
-        if (delta > 0f)
-        {
-            // Le drone s'est rapproché → récompense
-            AddReward(1/(Mathf.Pow(delta,3)+0.1f));
-            // AddReward(proximityReward);
-        }
-        else
-        {
-            // Le drone s'est éloigné → pénalité
-            AddReward(1/(Mathf.Pow(delta,3)+0.1f)); // delta < 0 donc pénalité
-            // AddReward(-1f * proximityReward);
-        }
+        // if (delta > 0f)
+        // {
+        //     // Le drone s'est rapproché → récompense
+        //     AddReward(1f/(Mathf.Pow(delta,2)+0.1f));
+        //     AddReward(proximityReward);
+        // }
+        // else
+        // {
+        //     // Le drone s'est éloigné → pénalité
+        //     AddReward(-1f/(Mathf.Pow(delta,2)+0.1f)); 
+        //     AddReward(-1f * proximityReward);
+        // }
 
         // previousDistanceToTarget = currentDistance;
 
@@ -123,7 +128,7 @@ public class DroneAgentPhase2 : Agent
         // if (angle >= 45f)
         // {
         //     // Plus le drone regarde ailleurs, plus il est pénalisé (entre 0 et -0.01)
-        //     float penalty = -0.0001f * (angle / 180f); // facultatif : pénalité croissante
+        //     float penalty = -0.01f * (angle / 180f); // facultatif : pénalité croissante
         //     AddReward(penalty);
         // }
 
@@ -136,7 +141,7 @@ public class DroneAgentPhase2 : Agent
         //     if (angle_mouvement >= 45f)
         //     {
         //         // pénalité croissante si le mouvement est mal dirigé
-        //         float penalty = -0.0001f * (angle_mouvement / 180f); 
+        //         float penalty = -0.01f * (angle_mouvement / 180f); 
         //         AddReward(penalty);
         //     }
         // }
@@ -144,8 +149,8 @@ public class DroneAgentPhase2 : Agent
         // previousPosition = transform.position;
 
 
-        //  pénalité de temps
-        // AddReward(-0.001f);
+        // //  pénalité de temps
+        AddReward(-0.01f);
 
         if (StepCount > maxStepTime)
         {
@@ -170,7 +175,7 @@ public class DroneAgentPhase2 : Agent
     {
         if (other.CompareTag("Target"))
         {
-            AddReward(+1000f);
+            AddReward(+100000f);
             EndEpisode();
         }
 
@@ -178,7 +183,7 @@ public class DroneAgentPhase2 : Agent
         {
             if (other == obs)
             {
-                AddReward(-1000f);
+                AddReward(-100000f);
                 EndEpisode();
                 break;
             }
