@@ -14,10 +14,12 @@ public class DroneAgentPhase2 : Agent
 
     [Header("Références")]
     public Transform target;
-    public Collider[] obstacles; // murs + plafond
+    public Collider[] obstacles;
+    public Transform trainingArea;
 
     [Header("Paramètres")]
-    public float maxStepTime = 3000f;
+    public float maxStepTime = 10000f;
+
     public override void Initialize()
     {
         rb = GetComponent<Rigidbody>();
@@ -29,38 +31,40 @@ public class DroneAgentPhase2 : Agent
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
-        // Position initiale aléatoire
-        transform.position = new Vector3(
+        // Positionnement en coordonnées locales
+        transform.localPosition = new Vector3(
             Random.Range(-20f, 20f),
             Random.Range(1f, 49f),
             Random.Range(-20f, 20f)
         );
         transform.rotation = Quaternion.identity;
 
-        // Placer la cible à une autre position dans la zone
-        target.position = new Vector3(
+        target.localPosition = new Vector3(
             Random.Range(-20f, 20f),
             Random.Range(1f, 49f),
             Random.Range(-20f, 20f)
         );
 
-        previousDistanceToTarget = Vector3.Distance(transform.position, target.position);
-        previousPosition = transform.position;
-
+        previousDistanceToTarget = Vector3.Distance(transform.localPosition, target.localPosition);
+        previousPosition = transform.localPosition;
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(rb.linearVelocity); // 3
-        sensor.AddObservation(transform.forward); // 3
-        sensor.AddObservation(target.position - transform.position); // 3
-        var (closestPoint, distance, col) = GetClosestObstaclePoint();
-        sensor.AddObservation(closestPoint - transform.position); // 3
-
+        sensor.AddObservation(rb.linearVelocity);                              // 3
+        // Debug.Log("1: "+ rb.linearVelocity);
+        sensor.AddObservation(transform.forward);                        // 3
+        // Debug.Log("2: "+ transform.forward);
+        sensor.AddObservation(target.localPosition - transform.localPosition); // 3
+        // Debug.Log($"3: {target.localPosition - transform.localPosition}");
+        var (closestPoint, _, _) = GetClosestObstaclePoint();
+        sensor.AddObservation(trainingArea.InverseTransformPoint(closestPoint) - transform.localPosition); // 3
+        // Debug.Log(closestPoint);
+        // Debug.Log($"4: {trainingArea.InverseTransformPoint(closestPoint) - transform.localPosition}");
         for (int i = 0; i < 48; i++)
-            {
-                sensor.AddObservation(0f);
-            }
+        {
+            sensor.AddObservation(0f);
+        }
     }
 
     private (Vector3 point, float distance, Collider obstacle) GetClosestObstaclePoint()
@@ -97,67 +101,22 @@ public class DroneAgentPhase2 : Agent
 
         InputManager.SetInput(vertical, horizontal, rotate, ascend);
 
-        // Récompense de proximité
-        float distanceToTarget = Vector3.Distance(transform.position, target.position);
-        float proximityReward = (1f - (Mathf.Pow(distanceToTarget,2))/4900);
-        AddReward(proximityReward);
-
-        // float currentDistance = Vector3.Distance(transform.position, target.position);
-        // float delta = previousDistanceToTarget - currentDistance;
-
-        // if (delta > 0f)
-        // {
-        //     // Le drone s'est rapproché → récompense
-        //     AddReward(1f/(Mathf.Pow(delta,2)+0.1f));
-        //     AddReward(proximityReward);
-        // }
-        // else
-        // {
-        //     // Le drone s'est éloigné → pénalité
-        //     AddReward(-1f/(Mathf.Pow(delta,2)+0.1f)); 
-        //     AddReward(-1f * proximityReward);
-        // }
-
-        // previousDistanceToTarget = currentDistance;
-
-        // Vector3 toTarget = (target.position - transform.position).normalized;
-        // Vector3 droneForward = transform.forward.normalized;
-
-        // float angle = Vector3.Angle(droneForward, toTarget); // en degrés
-
-        // if (angle >= 45f)
-        // {
-        //     // Plus le drone regarde ailleurs, plus il est pénalisé (entre 0 et -0.01)
-        //     float penalty = -0.01f * (angle / 180f); // facultatif : pénalité croissante
-        //     AddReward(penalty);
-        // }
-
-        // Vector3 movementVector = (transform.position - previousPosition).normalized;
-
-        // if (movementVector.magnitude > 0.01f) // éviter les divisions bizarres à l'arrêt
-        // {
-        //     float angle_mouvement = Vector3.Angle(movementVector, toTarget); // en degrés
-
-        //     if (angle_mouvement >= 45f)
-        //     {
-        //         // pénalité croissante si le mouvement est mal dirigé
-        //         float penalty = -0.01f * (angle_mouvement / 180f); 
-        //         AddReward(penalty);
-        //     }
-        // }
-
-        // previousPosition = transform.position;
+        // Récompense basée sur la variation de distance à la cible (locale)
+        float currentDistance = Vector3.Distance(transform.localPosition, target.localPosition);
+        float delta = previousDistanceToTarget - currentDistance;
+        float proximityReward = 2f*(1f - Mathf.Pow(currentDistance, 2) / 4900);
+        AddReward(delta > 0.03f ? proximityReward : -2f - proximityReward);
 
 
-        // //  pénalité de temps
-        AddReward(-0.01f);
+        previousDistanceToTarget = currentDistance;
+        previousPosition = transform.localPosition;
+
+        AddReward(-9f);
 
         if (StepCount > maxStepTime)
         {
-            // AddReward(-1f);
             EndEpisode();
         }
-
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -191,11 +150,21 @@ public class DroneAgentPhase2 : Agent
     }
 
     private void OnDrawGizmosSelected()
+{
+    if (target != null)
     {
-        if (target != null)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position, target.position);
-        }
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(transform.position, target.position);
     }
+
+    // Ligne vers l'obstacle le plus proche
+    if (obstacles != null && obstacles.Length > 0)
+    {
+        var (closestPoint, _, _) = GetClosestObstaclePoint();
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, closestPoint);
+        Gizmos.DrawSphere(closestPoint, 0.3f); // point visuel
+    }
+}
+
 }

@@ -1,177 +1,108 @@
-using System.Collections.Generic;
+using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
-using UnityEngine;
+using System.Collections.Generic;
 
+[RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(DroneContinuousMovement))]
-public class DroneAgent : Agent
+public class AttackerAgent : Agent
 {
-    [Header("Target and environment")] 
+    private Rigidbody rb;
+    private DroneContinuousMovement movement;
+
+    [Header("Références")]
     public Transform target;
     public List<Transform> defenders;
-    public Transform[] obstacles;
+    public List<Transform> obstacles;
+    public Collider[] limiteTerrain;
+    public Collider Ground;
+    public Transform trainingArea;
+
+    [Header("Paramètres")]
     public float maxStepTime = 10000f;
 
-    [Header("References")]
-    private DroneContinuousMovement movement;
-    private Rigidbody rb;
-
-    [Header("Rewards")]
-    public float collisionPenalty = -1f;
-    public float defenderPenalty = -0.5f;
-    public float proximityReward = 0.003f;
-    public float goalReward = 1.5f;
-    public float timePenalty = -0.001f;
-
-    // private Vector3 startingPosition;
-    // private Quaternion startingRotation;
+    private float previousDistanceToTarget;
 
     public override void Initialize()
     {
-        movement = GetComponent<DroneContinuousMovement>();
         rb = GetComponent<Rigidbody>();
-        // startingPosition = transform.position;
-        // startingRotation = transform.rotation;
+        movement = GetComponent<DroneContinuousMovement>();
     }
-
-    public TrainingArea trainingArea;
 
     public override void OnEpisodeBegin()
     {
-        if (trainingArea != null)
-        {
-            trainingArea.ResetScene();
-        }
-
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
-    }
 
+        var manager = trainingArea.GetComponent<TrainingArea>();
+        if (manager != null)
+        {
+            manager.ResetScene();
+        }
+
+        previousDistanceToTarget = Vector3.Distance(transform.localPosition, target.localPosition);
+
+
+    }
 
     public override void CollectObservations(VectorSensor sensor)
     {
+        sensor.AddObservation(rb.linearVelocity); // 3
+        sensor.AddObservation(transform.forward); // 3
+        sensor.AddObservation(target.localPosition - transform.localPosition); // 3
+        var (closestPoint, _, _) = GetClosestObstaclePoint();
+        Vector3 localClosest = trainingArea.InverseTransformPoint(closestPoint);
+        sensor.AddObservation(localClosest - transform.localPosition); // 3
 
 
-        
-        sensor.AddObservation(rb.linearVelocity);
-        sensor.AddObservation(transform.forward);
-        sensor.AddObservation(target.position - transform.position);
-
-        var (closestPoint, distance, obs) = GetClosestObstaclePoint();
-        sensor.AddObservation(closestPoint - transform.position);
-
-        // Défenseurs (positions relatives)
         foreach (Transform defender in defenders)
         {
-            sensor.AddObservation(defender.position - transform.position);
+            if (defender != null)
+                sensor.AddObservation(defender.localPosition - transform.localPosition); // 3 * N
         }
+
         
     }
 
-    public override void OnActionReceived(ActionBuffers actions)
+    private (Vector3 point, float distance, Collider obstacle) GetClosestObstaclePoint()
     {
-        // Actions continues : Vertical, Horizontal, Rotation, Ascend
-        float vertical = Mathf.Clamp(actions.ContinuousActions[0], -1f, 1f);
-        float horizontal = Mathf.Clamp(actions.ContinuousActions[1], -1f, 1f);
-        float rotate = Mathf.Clamp(actions.ContinuousActions[2], -1f, 1f);
-        float ascend = Mathf.Clamp(actions.ContinuousActions[3], -1f, 1f);
-
-        // Mapping des inputs vers ton script de mouvement
-        InputManager.SetInput(vertical, horizontal, rotate, ascend);
-
-        // Debug.Log($"[{name}] Actions => Vertical: {vertical:F2}, Horizontal: {horizontal:F2}, Rotate: {rotate:F2}, Ascend: {ascend:F2}");
-
-        
-        // Récompense basée sur la proximité de la cible
-        float distanceToTarget = Vector3.Distance(transform.position, target.position);
-        AddReward(proximityReward * (1f / (distanceToTarget + 1f)));
-
-        // Pénalité de temps
-        AddReward(timePenalty);
-
-        // Limite de temps
-        if (StepCount > maxStepTime)
-        {
-            EndEpisode();
-        }
-    }
-
-    public override void Heuristic(in ActionBuffers actionsOut)
-{
-    var contActions = actionsOut.ContinuousActions;
-
-    // Récupérer les entrées clavier
-    float vertical = Input.GetAxis("Vertical");  // Avant / Arrière
-    float horizontal = Input.GetAxis("Horizontal"); // Gauche / Droite
-    float rotate = Input.GetKey(KeyCode.J) ? -1f : Input.GetKey(KeyCode.L) ? 1f : 0f; // Rotation
-    float ascend = Input.GetKey(KeyCode.I) ? 1f : Input.GetKey(KeyCode.K) ? -1f : 0f; // Monter / Descendre
-
-    // Mapper les entrées dans les actions
-    contActions[0] = vertical;
-    contActions[1] = horizontal;
-    contActions[2] = rotate;
-    contActions[3] = ascend;
-
-    // Transmettre les entrées au InputManager
-    InputManager.SetInput(vertical, horizontal, rotate, ascend);
-}
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Target"))
-        {
-            AddReward(goalReward);
-            EndEpisode();
-        }
-        else if (other.CompareTag("Defender"))
-        {
-            AddReward(defenderPenalty);
-            EndEpisode();
-        }
-        else if (other.CompareTag("Obstacle"))
-        {
-            AddReward(collisionPenalty);
-            EndEpisode();
-        }
-    }
-
-    private Transform GetClosestObstacle()
-    {
-        Transform closest = null;
-        float minDistance = float.MaxValue;
-
-        foreach (Transform obs in obstacles)
-        {
-            float dist = Vector3.Distance(transform.position, obs.position);
-            if (dist < minDistance)
-            {
-                minDistance = dist;
-                closest = obs;
-            }
-        }
-
-        return closest;
-    }
-    private (Vector3 point, float distance, Transform obstacle) GetClosestObstaclePoint()
-    {
+        Vector3 droneLocalPos = transform.localPosition;
         Vector3 closestPoint = Vector3.zero;
         float minDistance = float.MaxValue;
-        Transform closestObstacle = null;
+        Collider closestObstacle = null;
 
-        foreach (Transform obs in obstacles)
+        foreach (Transform t in obstacles)
         {
-            Collider col = obs.GetComponent<Collider>();
-            if (col != null)
+            if (t != null)
             {
-                Vector3 point = col.ClosestPoint(transform.position);
-                float dist = Vector3.Distance(transform.position, point);
+                Collider col = t.GetComponent<Collider>();
+                if (col != null)
+                {
+                    Vector3 worldClosest = col.ClosestPoint(transform.position);
+                    Vector3 localClosest = trainingArea.InverseTransformPoint(worldClosest);
+                    float dist = Vector3.Distance(droneLocalPos, localClosest);
+
+                    if (dist < minDistance)
+                    {
+                        minDistance = dist;
+                        closestPoint = worldClosest;
+                        closestObstacle = col;
+                    }
+                }
+            }
+
+            if (Ground != null)
+            {
+                Vector3 worldPoint = Ground.ClosestPoint(transform.position);
+                Vector3 localPoint = trainingArea.InverseTransformPoint(worldPoint);
+                float dist = Vector3.Distance(droneLocalPos, localPoint);
 
                 if (dist < minDistance)
                 {
                     minDistance = dist;
-                    closestPoint = point;
-                    closestObstacle = obs;
+                    closestPoint = worldPoint;
+                    closestObstacle = Ground;
                 }
             }
         }
@@ -179,31 +110,116 @@ public class DroneAgent : Agent
         return (closestPoint, minDistance, closestObstacle);
     }
 
-    private void OnDrawGizmosSelected()
+    public override void OnActionReceived(ActionBuffers actions)
     {
-        Gizmos.color = Color.red;
-        if (target != null)
-            Gizmos.DrawLine(transform.position, target.position);
+        float vertical = Mathf.Clamp(actions.ContinuousActions[0], -1f, 1f);
+        float horizontal = Mathf.Clamp(actions.ContinuousActions[1], -1f, 1f);
+        float rotate = Mathf.Clamp(actions.ContinuousActions[2], -1f, 1f);
+        float ascend = Mathf.Clamp(actions.ContinuousActions[3], -1f, 1f);
 
-        if (defenders != null)
+        movement.SetInput(vertical, horizontal, rotate, ascend);
+
+        float currentDistance = Vector3.Distance(transform.localPosition, target.localPosition);
+        float delta = previousDistanceToTarget - currentDistance;
+        float proximityReward = 5f*(1f - Mathf.Pow(currentDistance, 2) / 80000);
+
+        if (delta < 0.02f) AddReward(-5f - proximityReward);
+        else AddReward(5f + proximityReward);
+
+        // AddReward(-200f); // pénalité de temps
+
+        if (StepCount > maxStepTime)
         {
-            Gizmos.color = Color.blue;
-            foreach (var def in defenders)
+            EndEpisode();
+        }
+
+        previousDistanceToTarget = currentDistance;
+
+    }
+
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        var c = actionsOut.ContinuousActions;
+        c[0] = Input.GetAxis("Vertical");
+        c[1] = Input.GetAxis("Horizontal");
+        c[2] = Input.GetKey(KeyCode.J) ? -1f : Input.GetKey(KeyCode.L) ? 1f : 0f;
+        c[3] = Input.GetKey(KeyCode.I) ? 1f : Input.GetKey(KeyCode.K) ? -1f : 0f;
+
+        movement.SetInput(c[0], c[1], c[2], c[3]);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Target"))
+        {
+            AddReward(+100000f);
+            var area = trainingArea.GetComponent<TrainingArea>();
+            if (area != null && area.dronesDefensifs != null)
             {
-                if (def != null)
-                    Gizmos.DrawLine(transform.position, def.position);
+                foreach (Transform def in area.dronesDefensifs)
+                {
+                    if (def != null)
+                    {
+                        var agent = def.GetComponent<DefenderAgent>();
+                        if (agent != null)
+                        {
+                            agent.AddReward(-100000f);
+                        }
+                    }
+                }
+            }
+
+            EndEpisode();
+        }
+
+        foreach (Transform obs in obstacles)
+        {
+            if (obs != null && other.transform == obs)
+            {
+                AddReward(-100000f);
+                EndEpisode();
+                break;
             }
         }
 
-        var (closestPoint, distance, obs) = GetClosestObstaclePoint();
-
-        if (obs != null)
+        foreach (Collider col in limiteTerrain)
         {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(transform.position, closestPoint);
-            Gizmos.DrawSphere(closestPoint, 0.2f); // petit point visuel
+            if (col != null && other == col)
+            {
+                AddReward(-100000f);
+                EndEpisode();
+                break;
+            }
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (target != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, target.position);
         }
 
+        if (obstacles != null && obstacles.Count > 0)
+        {
+            var (closestPoint, _, _) = GetClosestObstaclePoint();
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, closestPoint);
+            Gizmos.DrawSphere(closestPoint, 0.3f);
+        }
 
+        if (defenders != null && defenders.Count > 0)
+        {
+            Gizmos.color = Color.blue;
+            foreach (var defender in defenders)
+            {
+                if (defender != null)
+                {
+                    Gizmos.DrawLine(transform.position, defender.position);
+                }
+            }
+        }
     }
+
 }

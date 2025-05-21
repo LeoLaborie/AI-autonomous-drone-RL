@@ -6,6 +6,20 @@ public class DroneContinuousMovement : MonoBehaviour
 {
     Rigidbody drone;
 
+    // Entrées locales pour chaque drone
+    private float vertical;
+    private float horizontal;
+    private float rotate;
+    private float ascend;
+
+    public void SetInput(float vertical, float horizontal, float rotate, float ascend)
+    {
+        this.vertical = vertical;
+        this.horizontal = horizontal;
+        this.rotate = rotate;
+        this.ascend = ascend;
+    }
+
     void Awake()
     {
         drone = GetComponent<Rigidbody>();
@@ -23,16 +37,12 @@ public class DroneContinuousMovement : MonoBehaviour
         drone.rotation = Quaternion.Euler(
             new Vector3(tiltAmountForward, currentYRotation, tiltAmountSideways)
         );
-
-        // InputManager.ResetInput(); // Reset input after each frame
     }
 
     public float upForce;
 
     void MovementUpDown()
     {
-        float ascend = InputManager.Ascend;
-
         if (Mathf.Abs(ascend) > 0.1f)
         {
             upForce = Mathf.Lerp(upForce, ascend * 20f, Time.deltaTime * 5f);
@@ -49,12 +59,10 @@ public class DroneContinuousMovement : MonoBehaviour
 
     void MovementForward()
     {
-        float forwardInput = InputManager.Vertical;
-
-        if (Mathf.Abs(forwardInput) > 0.1f)
+        if (Mathf.Abs(vertical) > 0.1f)
         {
-            drone.AddRelativeForce(Vector3.forward * forwardInput * movementForwardSpeed);
-            tiltAmountForward = Mathf.SmoothDamp(tiltAmountForward, 20 * forwardInput, ref tiltVelocityForward, 0.1f);
+            drone.AddRelativeForce(Vector3.forward * vertical * movementForwardSpeed);
+            tiltAmountForward = Mathf.SmoothDamp(tiltAmountForward, 20 * vertical, ref tiltVelocityForward, 0.1f);
         }
         else
         {
@@ -69,9 +77,7 @@ public class DroneContinuousMovement : MonoBehaviour
 
     void Rotation()
     {
-        float rotationInput = InputManager.Rotation;
-
-        wantedYRotation += rotationInput * rotateAmountByKeys;
+        wantedYRotation += rotate * rotateAmountByKeys;
         currentYRotation = Mathf.SmoothDamp(currentYRotation, wantedYRotation, ref rotationYVelocity, 0.25f);
     }
 
@@ -95,12 +101,10 @@ public class DroneContinuousMovement : MonoBehaviour
 
     void Swerve()
     {
-        float horizontalInput = InputManager.Horizontal;
-
-        if (Mathf.Abs(horizontalInput) > 0.1f)
+        if (Mathf.Abs(horizontal) > 0.1f)
         {
-            drone.AddRelativeForce(Vector3.right * horizontalInput * sideMovementAmount);
-            tiltAmountSideways = Mathf.SmoothDamp(tiltAmountSideways, -20 * horizontalInput, ref tiltAmountVelocity, 0.1f);
+            drone.AddRelativeForce(Vector3.right * horizontal * sideMovementAmount);
+            tiltAmountSideways = Mathf.SmoothDamp(tiltAmountSideways, -20 * horizontal, ref tiltAmountVelocity, 0.1f);
         }
         else
         {

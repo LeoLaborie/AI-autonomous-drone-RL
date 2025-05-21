@@ -1,0 +1,38 @@
+{
+    "DroneFlight": {
+        "checkpoints": [
+            {
+                "steps": 46614,
+                "file_path": "results\\phase2_60obs_05\\DroneFlight\\DroneFlight-46614.onnx",
+                "reward": null,
+                "creation_time": 1747485166.961612,
+                "auxillary_file_paths": [
+                    "results\\phase2_60obs_05\\DroneFlight\\DroneFlight-46614.pt"
+                ]
+            },
+            {
+                "steps": 160342,
+                "file_path": "results\\phase2_60obs_05\\DroneFlight\\DroneFlight-160342.onnx",
+                "reward": 0.0,
+                "creation_time": 1747486309.620334,
+                "auxillary_file_paths": [
+                    "results\\phase2_60obs_05\\DroneFlight\\DroneFlight-160342.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 160342,
+            "file_path": "results\\phase2_60obs_05\\DroneFlight.onnx",
+            "reward": 0.0,
+            "creation_time": 1747486309.620334,
+            "auxillary_file_paths": [
+                "results\\phase2_60obs_05\\DroneFlight\\DroneFlight-160342.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.0+cu118"
+    }
+}

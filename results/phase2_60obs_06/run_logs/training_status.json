@@ -1,0 +1,56 @@
+{
+    "DroneFlight": {
+        "checkpoints": [
+            {
+                "steps": 78917,
+                "file_path": "results\\phase2_60obs_06\\DroneFlight\\DroneFlight-78917.onnx",
+                "reward": null,
+                "creation_time": 1747499829.8724177,
+                "auxillary_file_paths": [
+                    "results\\phase2_60obs_06\\DroneFlight\\DroneFlight-78917.pt"
+                ]
+            },
+            {
+                "steps": 87813,
+                "file_path": "results\\phase2_60obs_06\\DroneFlight\\DroneFlight-87813.onnx",
+                "reward": null,
+                "creation_time": 1747499989.2629604,
+                "auxillary_file_paths": [
+                    "results\\phase2_60obs_06\\DroneFlight\\DroneFlight-87813.pt"
+                ]
+            },
+            {
+                "steps": 295951,
+                "file_path": "results\\phase2_60obs_06\\DroneFlight\\DroneFlight-295951.onnx",
+                "reward": 93203.5,
+                "creation_time": 1747504145.5310981,
+                "auxillary_file_paths": [
+                    "results\\phase2_60obs_06\\DroneFlight\\DroneFlight-295951.pt"
+                ]
+            },
+            {
+                "steps": 299790,
+                "file_path": "results\\phase2_60obs_06\\DroneFlight\\DroneFlight-299790.onnx",
+                "reward": 59849.666666666664,
+                "creation_time": 1747504296.6353843,
+                "auxillary_file_paths": [
+                    "results\\phase2_60obs_06\\DroneFlight\\DroneFlight-299790.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 299790,
+            "file_path": "results\\phase2_60obs_06\\DroneFlight.onnx",
+            "reward": 59849.666666666664,
+            "creation_time": 1747504296.6353843,
+            "auxillary_file_paths": [
+                "results\\phase2_60obs_06\\DroneFlight\\DroneFlight-299790.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.0+cu118"
+    }
+}

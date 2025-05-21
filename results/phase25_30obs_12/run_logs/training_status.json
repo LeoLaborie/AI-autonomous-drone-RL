@@ -1,0 +1,47 @@
+{
+    "DroneFlight": {
+        "checkpoints": [
+            {
+                "steps": 499963,
+                "file_path": "results\\phase25_30obs_12\\DroneFlight\\DroneFlight-499963.onnx",
+                "reward": 87767.1969194256,
+                "creation_time": 1747665540.231746,
+                "auxillary_file_paths": [
+                    "results\\phase25_30obs_12\\DroneFlight\\DroneFlight-499963.pt"
+                ]
+            },
+            {
+                "steps": 999979,
+                "file_path": "results\\phase25_30obs_12\\DroneFlight\\DroneFlight-999979.onnx",
+                "reward": 91443.0703614758,
+                "creation_time": 1747666075.5412326,
+                "auxillary_file_paths": [
+                    "results\\phase25_30obs_12\\DroneFlight\\DroneFlight-999979.pt"
+                ]
+            },
+            {
+                "steps": 1008394,
+                "file_path": "results\\phase25_30obs_12\\DroneFlight\\DroneFlight-1008394.onnx",
+                "reward": 101080.58636658767,
+                "creation_time": 1747666092.1535378,
+                "auxillary_file_paths": [
+                    "results\\phase25_30obs_12\\DroneFlight\\DroneFlight-1008394.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1008394,
+            "file_path": "results\\phase25_30obs_12\\DroneFlight.onnx",
+            "reward": 101080.58636658767,
+            "creation_time": 1747666092.1535378,
+            "auxillary_file_paths": [
+                "results\\phase25_30obs_12\\DroneFlight\\DroneFlight-1008394.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.0+cu118"
+    }
+}

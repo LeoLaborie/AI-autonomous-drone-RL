@@ -1,0 +1,40 @@
+Mono path[0] = 'C:/Users/User/drone-hunting-by-a-drone-swarm/build/Drone hunting ML agent_Data/Managed'
+Mono config path = 'C:/Users/User/drone-hunting-by-a-drone-swarm/build/MonoBleedingEdge/etc'
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.0.42f1 (feb9a7235030)
+[Subsystems] Discovering subsystems at path C:/Users/User/drone-hunting-by-a-drone-swarm/build/Drone hunting ML agent_Data/UnitySubsystems
+kGfxThreadingModeSplitJobs is not supported on Direct3D 11. Reverting to kGfxThreadingModeClientWorkerJobs instead.
+GfxDevice: creating device client; kGfxThreadingModeClientWorkerJobs
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 3060 Ti (ID=0x2489)
+    Vendor:   NVIDIA
+    VRAM:     8024 MB
+    Driver:   32.0.15.6094
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.162 seconds
+- Finished resetting the current domain, in  0.003 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+<RI> Initializing input.
+Using Windows.Gaming.Input
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 2.327300 ms
+Registered Communicator in Agent.
+(-10.86, 0.50, -1.95)
+(-10.86, 0.50, -2.02)
+(-10.75, 0.50, -2.30)
+(-10.70, 0.50, -2.77)
+RenderGraph is now enabled.
+[Physics::Module] Cleanup current backned.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.

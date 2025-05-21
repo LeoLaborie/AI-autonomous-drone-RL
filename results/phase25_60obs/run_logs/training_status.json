@@ -1,0 +1,65 @@
+{
+    "DroneFlight": {
+        "checkpoints": [
+            {
+                "steps": 499979,
+                "file_path": "results\\phase25_60obs\\DroneFlight\\DroneFlight-499979.onnx",
+                "reward": 37089.6091969808,
+                "creation_time": 1747566156.7733154,
+                "auxillary_file_paths": [
+                    "results\\phase25_60obs\\DroneFlight\\DroneFlight-499979.pt"
+                ]
+            },
+            {
+                "steps": 999964,
+                "file_path": "results\\phase25_60obs\\DroneFlight\\DroneFlight-999964.onnx",
+                "reward": -28830.63099384308,
+                "creation_time": 1747566533.6158824,
+                "auxillary_file_paths": [
+                    "results\\phase25_60obs\\DroneFlight\\DroneFlight-999964.pt"
+                ]
+            },
+            {
+                "steps": 1499963,
+                "file_path": "results\\phase25_60obs\\DroneFlight\\DroneFlight-1499963.onnx",
+                "reward": 56000.214111328125,
+                "creation_time": 1747566835.893911,
+                "auxillary_file_paths": [
+                    "results\\phase25_60obs\\DroneFlight\\DroneFlight-1499963.pt"
+                ]
+            },
+            {
+                "steps": 1999966,
+                "file_path": "results\\phase25_60obs\\DroneFlight\\DroneFlight-1999966.onnx",
+                "reward": 83747.62759617397,
+                "creation_time": 1747567158.0086944,
+                "auxillary_file_paths": [
+                    "results\\phase25_60obs\\DroneFlight\\DroneFlight-1999966.pt"
+                ]
+            },
+            {
+                "steps": 2005220,
+                "file_path": "results\\phase25_60obs\\DroneFlight\\DroneFlight-2005220.onnx",
+                "reward": 64072.14594050816,
+                "creation_time": 1747567189.4672065,
+                "auxillary_file_paths": [
+                    "results\\phase25_60obs\\DroneFlight\\DroneFlight-2005220.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 2005220,
+            "file_path": "results\\phase25_60obs\\DroneFlight.onnx",
+            "reward": 64072.14594050816,
+            "creation_time": 1747567189.4672065,
+            "auxillary_file_paths": [
+                "results\\phase25_60obs\\DroneFlight\\DroneFlight-2005220.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.0+cu118"
+    }
+}

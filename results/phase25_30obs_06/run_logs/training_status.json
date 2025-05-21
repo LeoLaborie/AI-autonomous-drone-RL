@@ -1,0 +1,65 @@
+{
+    "DroneFlight": {
+        "checkpoints": [
+            {
+                "steps": 8499946,
+                "file_path": "results\\phase25_30obs_06\\DroneFlight\\DroneFlight-8499946.onnx",
+                "reward": -9710.639587402344,
+                "creation_time": 1747599376.3994248,
+                "auxillary_file_paths": [
+                    "results\\phase25_30obs_06\\DroneFlight\\DroneFlight-8499946.pt"
+                ]
+            },
+            {
+                "steps": 8999981,
+                "file_path": "results\\phase25_30obs_06\\DroneFlight\\DroneFlight-8999981.onnx",
+                "reward": 47370.502959251404,
+                "creation_time": 1747600242.9565716,
+                "auxillary_file_paths": [
+                    "results\\phase25_30obs_06\\DroneFlight\\DroneFlight-8999981.pt"
+                ]
+            },
+            {
+                "steps": 9499971,
+                "file_path": "results\\phase25_30obs_06\\DroneFlight\\DroneFlight-9499971.onnx",
+                "reward": -37421.222420692444,
+                "creation_time": 1747601252.4918184,
+                "auxillary_file_paths": [
+                    "results\\phase25_30obs_06\\DroneFlight\\DroneFlight-9499971.pt"
+                ]
+            },
+            {
+                "steps": 9999977,
+                "file_path": "results\\phase25_30obs_06\\DroneFlight\\DroneFlight-9999977.onnx",
+                "reward": -2842.7146167755127,
+                "creation_time": 1747602405.0145483,
+                "auxillary_file_paths": [
+                    "results\\phase25_30obs_06\\DroneFlight\\DroneFlight-9999977.pt"
+                ]
+            },
+            {
+                "steps": 10136248,
+                "file_path": "results\\phase25_30obs_06\\DroneFlight\\DroneFlight-10136248.onnx",
+                "reward": null,
+                "creation_time": 1747602809.6332462,
+                "auxillary_file_paths": [
+                    "results\\phase25_30obs_06\\DroneFlight\\DroneFlight-10136248.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 10136248,
+            "file_path": "results\\phase25_30obs_06\\DroneFlight.onnx",
+            "reward": null,
+            "creation_time": 1747602809.6332462,
+            "auxillary_file_paths": [
+                "results\\phase25_30obs_06\\DroneFlight\\DroneFlight-10136248.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.0+cu118"
+    }
+}
