@@ -1,0 +1,123 @@
+{
+    "DroneDefender": {
+        "checkpoints": [
+            {
+                "steps": 8999963,
+                "file_path": "results\\phase3_30obs_202\\DroneDefender\\DroneDefender-8999963.onnx",
+                "reward": -313.35327855283504,
+                "creation_time": 1748011931.700871,
+                "auxillary_file_paths": [
+                    "results\\phase3_30obs_202\\DroneDefender\\DroneDefender-8999963.pt"
+                ]
+            },
+            {
+                "steps": 9499955,
+                "file_path": "results\\phase3_30obs_202\\DroneDefender\\DroneDefender-9499955.onnx",
+                "reward": -321.1101209377521,
+                "creation_time": 1748012261.863049,
+                "auxillary_file_paths": [
+                    "results\\phase3_30obs_202\\DroneDefender\\DroneDefender-9499955.pt"
+                ]
+            },
+            {
+                "steps": 9999947,
+                "file_path": "results\\phase3_30obs_202\\DroneDefender\\DroneDefender-9999947.onnx",
+                "reward": -423.7992061440349,
+                "creation_time": 1748012592.4790678,
+                "auxillary_file_paths": [
+                    "results\\phase3_30obs_202\\DroneDefender\\DroneDefender-9999947.pt"
+                ]
+            },
+            {
+                "steps": 10499979,
+                "file_path": "results\\phase3_30obs_202\\DroneDefender\\DroneDefender-10499979.onnx",
+                "reward": -470.8169950945624,
+                "creation_time": 1748012923.8816159,
+                "auxillary_file_paths": [
+                    "results\\phase3_30obs_202\\DroneDefender\\DroneDefender-10499979.pt"
+                ]
+            },
+            {
+                "steps": 10831302,
+                "file_path": "results\\phase3_30obs_202\\DroneDefender\\DroneDefender-10831302.onnx",
+                "reward": null,
+                "creation_time": 1748013179.413481,
+                "auxillary_file_paths": [
+                    "results\\phase3_30obs_202\\DroneDefender\\DroneDefender-10831302.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 10831302,
+            "file_path": "results\\phase3_30obs_202\\DroneDefender.onnx",
+            "reward": null,
+            "creation_time": 1748013179.413481,
+            "auxillary_file_paths": [
+                "results\\phase3_30obs_202\\DroneDefender\\DroneDefender-10831302.pt"
+            ]
+        }
+    },
+    "DroneAttacker": {
+        "checkpoints": [
+            {
+                "steps": 124129,
+                "file_path": "results\\phase3_30obs_202\\DroneAttacker\\DroneAttacker-124129.onnx",
+                "reward": -108.0909090909091,
+                "creation_time": 1748006033.9849052,
+                "auxillary_file_paths": [
+                    "results\\phase3_30obs_202\\DroneAttacker\\DroneAttacker-124129.pt"
+                ]
+            },
+            {
+                "steps": 499999,
+                "file_path": "results\\phase3_30obs_202\\DroneAttacker\\DroneAttacker-499999.onnx",
+                "reward": 3817.722222222222,
+                "creation_time": 1748007923.19558,
+                "auxillary_file_paths": [
+                    "results\\phase3_30obs_202\\DroneAttacker\\DroneAttacker-499999.pt"
+                ]
+            },
+            {
+                "steps": 999956,
+                "file_path": "results\\phase3_30obs_202\\DroneAttacker\\DroneAttacker-999956.onnx",
+                "reward": 3873.245901639344,
+                "creation_time": 1748009926.2100747,
+                "auxillary_file_paths": [
+                    "results\\phase3_30obs_202\\DroneAttacker\\DroneAttacker-999956.pt"
+                ]
+            },
+            {
+                "steps": 1499984,
+                "file_path": "results\\phase3_30obs_202\\DroneAttacker\\DroneAttacker-1499984.onnx",
+                "reward": 4940.5,
+                "creation_time": 1748011931.5941322,
+                "auxillary_file_paths": [
+                    "results\\phase3_30obs_202\\DroneAttacker\\DroneAttacker-1499984.pt"
+                ]
+            },
+            {
+                "steps": 1805233,
+                "file_path": "results\\phase3_30obs_202\\DroneAttacker\\DroneAttacker-1805233.onnx",
+                "reward": 2938.4453781512607,
+                "creation_time": 1748013179.335383,
+                "auxillary_file_paths": [
+                    "results\\phase3_30obs_202\\DroneAttacker\\DroneAttacker-1805233.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1805233,
+            "file_path": "results\\phase3_30obs_202\\DroneAttacker.onnx",
+            "reward": 2938.4453781512607,
+            "creation_time": 1748013179.335383,
+            "auxillary_file_paths": [
+                "results\\phase3_30obs_202\\DroneAttacker\\DroneAttacker-1805233.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.0+cu118"
+    }
+}

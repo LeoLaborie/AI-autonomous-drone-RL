@@ -13,8 +13,8 @@ behaviors:
 
     network_settings:
       normalize: true
-      hidden_units: 32
-      num_layers: 3
+      hidden_units: 128
+      num_layers: 4
 
     reward_signals:
       extrinsic:

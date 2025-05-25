@@ -15,6 +15,20 @@ public class TrainingArea : MonoBehaviour
 
     public void ResetScene()
     {
+        // Fin d'épisode pour chaque agent défenseur
+        foreach (Transform def in dronesDefensifs)
+        {
+            if (def != null)
+            {
+                var agent = def.GetComponent<DefenderAgent>();
+                if (agent != null)
+                {
+                    agent.EndEpisode();
+                    agent.gameObject.SetActive(true);
+                }
+            }
+        }
+        
         // Coin local pour la cible
         Vector3 coinCible = GetCoinPosition(onGround: true);
         cible.localPosition = coinCible;
@@ -24,24 +38,12 @@ public class TrainingArea : MonoBehaviour
         float height = Random.Range(5f, zoneHeight);
         droneEnnemi.localPosition = new Vector3(coinDrone.x, height, coinDrone.z);
 
-        // Défenseurs entre drone et cible
-        PlaceObjectsBetween(droneEnnemi.localPosition, cible.localPosition, dronesDefensifs, yFixed: false);
 
         // Obstacles dispersés sur le sol
         PlaceObjectsScatteredWithDistanceCheck(obstacles, new Vector2(groundSize.x * 10, groundSize.z * 10), y: 0f);
 
-        // 🔁 Fin d'épisode pour chaque agent défenseur
-        foreach (Transform def in dronesDefensifs)
-        {
-            if (def != null)
-            {
-                var agent = def.GetComponent<DefenderAgent>();
-                if (agent != null)
-                {
-                    agent.EndEpisode();
-                }
-            }
-        }
+        
+        PlaceObjectsBetween(droneEnnemi.localPosition, cible.localPosition, dronesDefensifs, yFixed: false);
     }
 
 

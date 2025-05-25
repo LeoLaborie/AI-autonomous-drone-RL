@@ -119,21 +119,21 @@ public class AttackerAgent : Agent
 
         movement.SetInput(vertical, horizontal, rotate, ascend);
 
-        float currentDistance = Vector3.Distance(transform.localPosition, target.localPosition);
-        float delta = previousDistanceToTarget - currentDistance;
-        float proximityReward = 5f*(1f - Mathf.Pow(currentDistance, 2) / 80000);
+        // float currentDistance = Vector3.Distance(transform.localPosition, target.localPosition);
+        // float delta = previousDistanceToTarget - currentDistance;
+        // float proximityReward = 0.1f * (1f - Mathf.Pow(currentDistance, 2) / 80000);
 
-        if (delta < 0.02f) AddReward(-5f - proximityReward);
-        else AddReward(5f + proximityReward);
+        // if (delta < 0f) AddReward(-1f);
+        // else AddReward(0.1f);
 
-        // AddReward(-200f); // pénalité de temps
+        AddReward(-0.1f); // pénalité de temps
 
         if (StepCount > maxStepTime)
         {
             EndEpisode();
         }
 
-        previousDistanceToTarget = currentDistance;
+        // previousDistanceToTarget = currentDistance;
 
     }
 
@@ -152,7 +152,7 @@ public class AttackerAgent : Agent
     {
         if (other.CompareTag("Target"))
         {
-            AddReward(+100000f);
+            AddReward(+1000f);
             var area = trainingArea.GetComponent<TrainingArea>();
             if (area != null && area.dronesDefensifs != null)
             {
@@ -163,33 +163,47 @@ public class AttackerAgent : Agent
                         var agent = def.GetComponent<DefenderAgent>();
                         if (agent != null)
                         {
-                            agent.AddReward(-100000f);
+                            agent.AddReward(-100f);
                         }
                     }
                 }
             }
 
+
+            if (Ground != null)
+            {
+                Renderer r = Ground.GetComponent<Renderer>();
+                if (r != null)
+                    r.material.color = Color.red;
+            }
+            
             EndEpisode();
         }
 
-        foreach (Transform obs in obstacles)
+        if (other.CompareTag("Obstacle") || other.CompareTag("Defender"))
         {
-            if (obs != null && other.transform == obs)
-            {
-                AddReward(-100000f);
-                EndEpisode();
-                break;
-            }
-        }
 
-        foreach (Collider col in limiteTerrain)
-        {
-            if (col != null && other == col)
+
+            if (Ground != null)
             {
-                AddReward(-100000f);
-                EndEpisode();
-                break;
+
+                Renderer r = Ground.GetComponent<Renderer>();
+                if (r != null)
+                {
+                    if (other.CompareTag("Defender"))
+                    {
+                        AddReward(-1000f);
+                        r.material.color = Color.green;
+                    }
+                    else if (other.CompareTag("Obstacle"))
+                    {
+                        AddReward(-1000f);
+                        r.material.color = Color.yellow;
+                    }
+                }
             }
+            
+            EndEpisode();
         }
     }
 

@@ -36,7 +36,8 @@ public class DefenderAgent : Agent
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
-        previousDistanceToTarget = Vector3.Distance(transform.localPosition, target.localPosition);
+        // transform.localPosition = target.localPosition + new Vector3(Random.Range(-10, 10), Random.Range(10, 20), Random.Range(-10, 10));
+        // previousDistanceToTarget = Vector3.Distance(transform.localPosition, target.localPosition);
 
     }
 
@@ -125,7 +126,6 @@ public class DefenderAgent : Agent
 
         return (closestPoint, minDistance, closestObstacle);
     }
-
     public override void OnActionReceived(ActionBuffers actions)
     {
         float vertical = Mathf.Clamp(actions.ContinuousActions[0], -1f, 1f);
@@ -135,23 +135,35 @@ public class DefenderAgent : Agent
 
         movement.SetInput(vertical, horizontal, rotate, ascend);
 
-        // float currentDistance = Vector3.Distance(transform.localPosition, enemyDrone.localPosition);
-        // float delta = previousDistanceToTarget - currentDistance;
-        // float proximityReward = 5f*(1f - Mathf.Pow(currentDistance, 2) / 40000);
+        // 📍 Récompense basée sur la distance à la cible (max à 20m)
+        float currentDistanceTarget = Vector3.Distance(transform.localPosition, target.localPosition);
+        if (currentDistanceTarget > 40) AddReward(-10f);
+        // float distanceRewardTarget = 1f - Mathf.Pow(currentDistanceTarget - 20f, 2) / 100f;
+        // AddReward(0.1f * distanceRewardTarget);
 
-        // if (delta < 0.02f) AddReward(-5f - proximityReward);
-        // else AddReward(5f + proximityReward);
+        // // 👥 Récompense basée sur la distance au plus proche allié (max à 5m)
+        // float minAllyDistance = float.MaxValue;
 
-        // AddReward(-200f); // pénalité de temps
+        // foreach (Transform other in defenders)
+        // {
+        //     if (other != null && other != this.transform)
+        //     {
+        //         float d = Vector3.Distance(transform.localPosition, other.localPosition);
+        //         if (d < minAllyDistance)
+        //             minAllyDistance = d;
+        //     }
+        // }
 
-        if (StepCount > maxStepTime)
-        {
-            EndEpisode();
-        }
+        // // Même formule, max à 5m, décroît au carré
+        // float distanceRewardAlly = 1f - Mathf.Pow(minAllyDistance - 10f, 2) / 100f;
+        // AddReward(0.1f * distanceRewardAlly);
 
-        // previousDistanceToTarget = currentDistance;
-
+        float currentDistance = Vector3.Distance(transform.localPosition, enemyDrone.localPosition);
+        float distanceReward = 1f - currentDistance / 100f;
+        AddReward(distanceReward);
     }
+
+
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
@@ -168,49 +180,35 @@ public class DefenderAgent : Agent
     {
         if (other == enemyDrone.GetComponent<Collider>())
         {
-            AddReward(+100000f);
-            var area = trainingArea.GetComponent<TrainingArea>();
-            if (area != null && area.dronesDefensifs != null)
-            {
-                foreach (Transform def in area.dronesDefensifs)
-                {
-                    if (def != null)
-                    {
-                        var agent = def.GetComponent<DefenderAgent>();
-                        if (agent != null && agent != this)
-                        {
-                            agent.AddReward(+100000f);
-                        }
-                    }
-                }
-            }
+            AddReward(+1000f);
+            // var area = trainingArea.GetComponent<TrainingArea>();
+            // if (area != null && area.dronesDefensifs != null)
+            // {
+            //     foreach (Transform def in area.dronesDefensifs)
+            //     {
+            //         if (def != null)
+            //         {
+            //             var agent = def.GetComponent<DefenderAgent>();
+            //             if (agent != null && agent != this)
+            //             {
+            //                 agent.AddReward(+500f);
+            //             }
+            //         }
+            //     }
+            // }
 
-            var manager = trainingArea.GetComponent<TrainingArea>();
-            if (manager != null)
-            {
-                manager.ResetScene();
-            }
+            // var manager = trainingArea.GetComponent<TrainingArea>();
+            // if (manager != null)
+            // {
+            //     manager.ResetScene();
+            // }
 
         }
 
-        foreach (Transform obs in obstacles)
+        if (other.CompareTag("Obstacle") || other.CompareTag("Defender") || other.CompareTag("Target"))
         {
-            if (obs != null && other.transform == obs)
-            {
-                AddReward(-100000f);
-                EndEpisode();
-                break;
-            }
-        }
-
-        foreach (Collider col in limiteTerrain)
-        {
-            if (col != null && other == col)
-            {
-                AddReward(-100000f);
-                EndEpisode();
-                break;
-            }
+            AddReward(-1000f);
+            gameObject.SetActive(false);
         }
     }
 

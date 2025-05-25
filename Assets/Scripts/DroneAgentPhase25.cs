@@ -139,18 +139,18 @@ public class DroneAgentPhase25 : Agent
         movement.SetInput(vertical, horizontal, rotate, ascend);
 
         // Récompense basée sur la variation de distance à la cible (locale)
-        // float currentDistance = Vector3.Distance(transform.localPosition, target.localPosition);
-        // float delta = previousDistanceToTarget - currentDistance;
-        // float proximityReward = 5f*(1f - Mathf.Pow(currentDistance, 2) / 40000);
+        float currentDistance = Vector3.Distance(transform.localPosition, target.localPosition);
+        float delta = previousDistanceToTarget - currentDistance;
+        float proximityReward = (1f - Mathf.Pow(currentDistance, 2) / 40000);
 
-        // if (delta < 0.05f) AddReward(-5f - proximityReward);
-        // else AddReward(5f + proximityReward);
-        AddReward(-300f);
+        if (delta < 0f) AddReward(-1f);
+        else AddReward(1f);
+        // AddReward(-100f);
 
-        // if (currentDistance < 10) {
-        //     AddReward(100000);
-        //     EndEpisode();
-        // }
+        if (currentDistance < 10) {
+            AddReward(100000f);
+            EndEpisode();
+        }
 
         if (StepCount > maxStepTime)
         {
