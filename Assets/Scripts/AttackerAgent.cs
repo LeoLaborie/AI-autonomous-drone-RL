@@ -121,12 +121,9 @@ public class AttackerAgent : Agent
 
         // float currentDistance = Vector3.Distance(transform.localPosition, target.localPosition);
         // float delta = previousDistanceToTarget - currentDistance;
-        // float proximityReward = 0.1f * (1f - Mathf.Pow(currentDistance, 2) / 80000);
 
         // if (delta < 0f) AddReward(-1f);
-        // else AddReward(0.1f);
 
-        AddReward(-0.1f); // pénalité de temps
 
         if (StepCount > maxStepTime)
         {
@@ -153,21 +150,21 @@ public class AttackerAgent : Agent
         if (other.CompareTag("Target"))
         {
             AddReward(+1000f);
-            var area = trainingArea.GetComponent<TrainingArea>();
-            if (area != null && area.dronesDefensifs != null)
-            {
-                foreach (Transform def in area.dronesDefensifs)
-                {
-                    if (def != null)
-                    {
-                        var agent = def.GetComponent<DefenderAgent>();
-                        if (agent != null)
-                        {
-                            agent.AddReward(-100f);
-                        }
-                    }
-                }
-            }
+            // var area = trainingArea.GetComponent<TrainingArea>();
+            // if (area != null && area.dronesDefensifs != null)
+            // {
+            //     foreach (Transform def in area.dronesDefensifs)
+            //     {
+            //         if (def != null)
+            //         {
+            //             var agent = def.GetComponent<DefenderAgent>();
+            //             if (agent != null)
+            //             {
+            //                 agent.AddReward(-1000f);
+            //             }
+            //         }
+            //     }
+            // }
 
 
             if (Ground != null)

@@ -23,12 +23,15 @@ public class DefenderAgent : Agent
     [Header("Paramètres")]
     public float maxStepTime = 10000f;
 
-    private float previousDistanceToTarget;
+    private float previousDistanceToAttacker;
+    private Rigidbody enemyRb;
+
 
     public override void Initialize()
     {
         rb = GetComponent<Rigidbody>();
         movement = GetComponent<DroneContinuousMovement>();
+        enemyRb = enemyDrone.GetComponent<Rigidbody>();
     }
 
     public override void OnEpisodeBegin()
@@ -37,7 +40,7 @@ public class DefenderAgent : Agent
         rb.angularVelocity = Vector3.zero;
 
         // transform.localPosition = target.localPosition + new Vector3(Random.Range(-10, 10), Random.Range(10, 20), Random.Range(-10, 10));
-        // previousDistanceToTarget = Vector3.Distance(transform.localPosition, target.localPosition);
+        previousDistanceToAttacker = Vector3.Distance(transform.localPosition, enemyDrone.localPosition);
 
     }
 
@@ -46,6 +49,8 @@ public class DefenderAgent : Agent
         sensor.AddObservation(rb.linearVelocity); // 3
         sensor.AddObservation(transform.forward); // 3
         sensor.AddObservation(enemyDrone.localPosition - transform.localPosition); // 3
+        sensor.AddObservation(enemyRb.linearVelocity); // 3
+        
         var (closestPoint, _, _) = GetClosestObstaclePoint();
         Vector3 localClosest = trainingArea.InverseTransformPoint(closestPoint);
         sensor.AddObservation(localClosest - transform.localPosition); // 3
@@ -135,32 +140,12 @@ public class DefenderAgent : Agent
 
         movement.SetInput(vertical, horizontal, rotate, ascend);
 
-        // 📍 Récompense basée sur la distance à la cible (max à 20m)
-        float currentDistanceTarget = Vector3.Distance(transform.localPosition, target.localPosition);
-        if (currentDistanceTarget > 40) AddReward(-10f);
-        // float distanceRewardTarget = 1f - Mathf.Pow(currentDistanceTarget - 20f, 2) / 100f;
-        // AddReward(0.1f * distanceRewardTarget);
-
-        // // 👥 Récompense basée sur la distance au plus proche allié (max à 5m)
-        // float minAllyDistance = float.MaxValue;
-
-        // foreach (Transform other in defenders)
-        // {
-        //     if (other != null && other != this.transform)
-        //     {
-        //         float d = Vector3.Distance(transform.localPosition, other.localPosition);
-        //         if (d < minAllyDistance)
-        //             minAllyDistance = d;
-        //     }
-        // }
-
-        // // Même formule, max à 5m, décroît au carré
-        // float distanceRewardAlly = 1f - Mathf.Pow(minAllyDistance - 10f, 2) / 100f;
-        // AddReward(0.1f * distanceRewardAlly);
-
         float currentDistance = Vector3.Distance(transform.localPosition, enemyDrone.localPosition);
-        float distanceReward = 1f - currentDistance / 100f;
-        AddReward(distanceReward);
+        AddReward(1 - currentDistance / 100);
+        // float delta = previousDistanceToAttacker - currentDistance;
+        // if (delta < 0f) AddReward(-1f);
+        // previousDistanceToAttacker = currentDistance;
+
     }
 
 
@@ -191,17 +176,12 @@ public class DefenderAgent : Agent
             //             var agent = def.GetComponent<DefenderAgent>();
             //             if (agent != null && agent != this)
             //             {
-            //                 agent.AddReward(+500f);
+            //                 agent.AddReward(+100f);
             //             }
             //         }
             //     }
             // }
 
-            // var manager = trainingArea.GetComponent<TrainingArea>();
-            // if (manager != null)
-            // {
-            //     manager.ResetScene();
-            // }
 
         }
 

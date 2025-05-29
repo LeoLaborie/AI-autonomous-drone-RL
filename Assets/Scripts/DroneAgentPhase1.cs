@@ -48,7 +48,7 @@ public class DroneAgentPhase1 : Agent
         sensor.AddObservation(rb.linearVelocity);                    // 3
         sensor.AddObservation(transform.forward);                    // 3
         sensor.AddObservation(zoneCenter.localPosition - transform.localPosition);              // 3
-
+        sensor.AddObservation(Vector3.zero);
         var (closestPoint, _, _) = GetClosestObstaclePoint();
         Vector3 localPoint = trainingArea.InverseTransformPoint(closestPoint);
         sensor.AddObservation(localPoint - transform.localPosition); // 3

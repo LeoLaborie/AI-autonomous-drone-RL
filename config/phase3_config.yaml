@@ -1,7 +1,7 @@
 behaviors:
   DroneDefender:
     trainer_type: ppo
-    # init_path: results\DefenderFlight\DroneDefender\checkpoint.pt
+    # init_path: results\phase3_switch\DroneDefender\checkpoint.pt
     hyperparameters:
       batch_size: 1024
       buffer_size: 10240
@@ -23,13 +23,15 @@ behaviors:
         gamma: 0.99
         strength: 1.0
 
-    max_steps: 1.0e9
+    max_steps: 1.0e8
     time_horizon: 64
     summary_freq: 10000
 
   DroneAttacker:
     trainer_type: ppo
-    # init_path: results\phase3_5x256_02\DroneAttacker\checkpoint.pt
+    # init_path: results\phase3_5x256_03\DroneAttacker\checkpoint.pt
+    # init_path: results\phase2_4x128\DroneFlight\checkpoint.pt
+
     hyperparameters:
       batch_size: 1024
       buffer_size: 10240
@@ -51,6 +53,6 @@ behaviors:
         gamma: 0.99
         strength: 1.0
 
-    max_steps: 1.0e9
+    max_steps: 1.0e8
     time_horizon: 64
     summary_freq: 10000
