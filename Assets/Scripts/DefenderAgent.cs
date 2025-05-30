@@ -140,8 +140,8 @@ public class DefenderAgent : Agent
 
         movement.SetInput(vertical, horizontal, rotate, ascend);
 
-        float currentDistance = Vector3.Distance(transform.localPosition, enemyDrone.localPosition);
-        AddReward(1 - currentDistance / 100);
+        // float currentDistance = Vector3.Distance(transform.localPosition, enemyDrone.localPosition);
+        // AddReward(1 - currentDistance / 100);
         // float delta = previousDistanceToAttacker - currentDistance;
         // if (delta < 0f) AddReward(-1f);
         // previousDistanceToAttacker = currentDistance;

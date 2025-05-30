@@ -145,11 +145,11 @@ public class DroneAgentPhase25 : Agent
         float delta = previousDistanceToTarget - currentDistance;
         // float proximityReward = (1f - Mathf.Pow(currentDistance, 2) / 40000);
 
-        if (delta < 0f) AddReward(-1f);
-        else AddReward(1f);
-        AddReward(-100f);
+        // if (delta < 0f) AddReward(-1f);
+        // else AddReward(1f);
+        AddReward(-300f);
 
-        if (currentDistance < 10) {
+        if (currentDistance < 5) {
             AddReward(100000f);
             EndEpisode();
         }
