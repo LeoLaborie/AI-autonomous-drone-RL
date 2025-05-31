@@ -12,6 +12,10 @@ public class DroneAgent : Agent
     private DroneContinuousMovement movement;
     // private Vector3 previousPosition;
     private float previousDistanceToTarget;
+    private float speedSum = 0f;
+    private float maxSpeed = 0f;
+    private int speedCount = 0;
+
 
     [Header("Références")]
     public Transform target;
@@ -27,7 +31,7 @@ public class DroneAgent : Agent
     public int verticalRays = 6;     // élévation (-90° → 90°)
     public float rayLength = 20f;
     public LayerMask obstacleMask;
-
+    public LayerMask targetMask;
 
     public override void Initialize()
     {
@@ -36,9 +40,22 @@ public class DroneAgent : Agent
     }
 
     public override void OnEpisodeBegin()
-    {
+    {   
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
+
+        if (speedCount > 0)
+        {
+            float averageSpeed = speedSum / speedCount;
+            float averageKmH = averageSpeed * 3.6f;
+            float maxKmH = maxSpeed * 3.6f;
+            Debug.Log($"[Agent {name}] Vitesse moyenne: {averageKmH:F2} km/h | Vitesse max: {maxKmH:F2} km/h");
+        }
+
+        speedSum = 0f;
+        maxSpeed = 0f;
+        speedCount = 0;
+
 
         // Positionnement en coordonnées locales
         transform.localPosition = new Vector3(
@@ -78,11 +95,17 @@ public class DroneAgent : Agent
             if (Mathf.Abs(verticalAngle) > 89f)
             {
                 Quaternion rotation = Quaternion.Euler(verticalAngle, 0f, 0f);
-                Vector3 dir = rotation * transform.forward;
+                Vector3 dir = transform.rotation * (rotation * Vector3.forward);
 
-                if (Physics.Raycast(transform.position, dir, out RaycastHit hit, rayLength, obstacleMask))
+                
+
+                if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitTarget, rayLength, targetMask))
                 {
-                    sensor.AddObservation(hit.distance / rayLength);
+                    sensor.AddObservation(1f);
+                }
+                else if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitObstacle, rayLength, obstacleMask))
+                {
+                    sensor.AddObservation(hitObstacle.distance / rayLength);
                 }
                 else
                 {
@@ -95,11 +118,17 @@ public class DroneAgent : Agent
                 {
                     float horizontalAngle = 360f * j / horizontalRays;
                     Quaternion rotation = Quaternion.Euler(verticalAngle, horizontalAngle, 0f);
-                    Vector3 dir = rotation * transform.forward;
+                    Vector3 dir = transform.rotation * (rotation * Vector3.forward);
 
-                    if (Physics.Raycast(transform.position, dir, out RaycastHit hit, rayLength, obstacleMask))
+                    
+
+                    if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitTarget, rayLength, targetMask))
                     {
-                        sensor.AddObservation(hit.distance / rayLength);
+                        sensor.AddObservation(1f);
+                    }
+                    else if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitObstacle, rayLength, obstacleMask))
+                    {
+                        sensor.AddObservation(hitObstacle.distance / rayLength);
                     }
                     else
                     {
@@ -110,7 +139,7 @@ public class DroneAgent : Agent
         }
     }
 
-    
+
 
 
 
@@ -125,22 +154,27 @@ public class DroneAgent : Agent
         movement.SetInput(vertical, horizontal, rotate, ascend);
 
         // Récompense basée sur la variation de distance à la cible (locale)
-        float currentDistance = Vector3.Distance(transform.localPosition, target.localPosition);
-        float delta = previousDistanceToTarget - currentDistance;
+        // float currentDistance = Vector3.Distance(transform.localPosition, target.localPosition);
+        // float delta = previousDistanceToTarget - currentDistance;
         // float proximityReward = (1f - Mathf.Pow(currentDistance, 2) / 40000);
-     
-        if (delta < 0f) AddReward(-1f);
-        else AddReward(1f);
-        // AddReward(-300f);
 
-        
+        // if (delta < 0f) AddReward(-0.1f);
+        // else AddReward(0.1f);
+        AddReward(-0.2f);
+
+
 
         if (StepCount > maxStepTime)
         {
             EndEpisode();
         }
 
-        previousDistanceToTarget = currentDistance;
+        // previousDistanceToTarget = currentDistance;
+        float speed = rb.linearVelocity.magnitude;
+        speedSum += speed;
+        maxSpeed = Mathf.Max(maxSpeed, speed);
+        speedCount++;
+
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -236,13 +270,18 @@ public class DroneAgent : Agent
             float verticalT = (float)i / (verticalRays - 1);
             float verticalAngle = Mathf.Lerp(-90f, 90f, verticalT);
 
-            // Si verticalAngle est proche de ±90°, tirer un seul rayon droit
+            //Si verticalAngle est proche de ±90°, tirer un seul rayon droit
             if (Mathf.Abs(verticalAngle) > 89f)
             {
                 Quaternion rotation = Quaternion.Euler(verticalAngle, 0f, 0f);
-                Vector3 dir = rotation * transform.forward;
+                Vector3 dir = transform.rotation * (rotation * Vector3.forward);
 
-                if (Physics.Raycast(transform.position, dir, out RaycastHit hit, rayLength, obstacleMask))
+                if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitTarget, rayLength, targetMask))
+                {
+                    Gizmos.color = Color.cyan;
+                    Gizmos.DrawRay(transform.position, dir * rayLength);
+                }
+                else if (Physics.Raycast(transform.position, dir, out RaycastHit hit, rayLength, obstacleMask))
                 {
                     Gizmos.color = Color.Lerp(Color.red, Color.yellow, 0.5f);
                     Gizmos.DrawLine(transform.position, hit.point);
@@ -260,9 +299,14 @@ public class DroneAgent : Agent
                 {
                     float horizontalAngle = 360f * j / horizontalRays;
                     Quaternion rotation = Quaternion.Euler(verticalAngle, horizontalAngle, 0f);
-                    Vector3 dir = rotation * transform.forward;
+                    Vector3 dir = transform.rotation * (rotation * Vector3.forward);
 
-                    if (Physics.Raycast(transform.position, dir, out RaycastHit hit, rayLength, obstacleMask))
+                    if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitTarget, rayLength, targetMask))
+                    {
+                        Gizmos.color = Color.cyan;
+                        Gizmos.DrawRay(transform.position, dir * rayLength);
+                    }
+                    else if (Physics.Raycast(transform.position, dir, out RaycastHit hit, rayLength, obstacleMask))
                     {
                         Gizmos.color = Color.Lerp(Color.red, Color.yellow, 0.5f);
                         Gizmos.DrawLine(transform.position, hit.point);
