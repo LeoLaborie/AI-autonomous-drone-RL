@@ -4,6 +4,7 @@ Logs/
 Temp/
 UserSettings/
 
+
 # Fichiers et dossiers générés par le package manager de Unity
 Packages/*.tgz
 

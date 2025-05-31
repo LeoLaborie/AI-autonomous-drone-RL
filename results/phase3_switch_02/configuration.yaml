@@ -35,7 +35,7 @@ behaviors:
           memory: null
           goal_conditioning_type: hyper
           deterministic: false
-    init_path: results\phase2_33obs\DroneFlight\checkpoint.pt
+    init_path: results\phase3_switch\DroneDefender\checkpoint.pt
     keep_checkpoints: 5
     even_checkpoints: false
     max_steps: 100000000
@@ -79,7 +79,7 @@ behaviors:
           memory: null
           goal_conditioning_type: hyper
           deterministic: false
-    init_path: results\phase2_4x128\DroneFlight\checkpoint.pt
+    init_path: results\phase3_switch\DroneAttacker\checkpoint.pt
     keep_checkpoints: 5
     even_checkpoints: false
     max_steps: 100000000
@@ -111,7 +111,7 @@ engine_settings:
 environment_parameters: null
 checkpoint_settings:
   run_id: phase3_switch_02
-  initialize_from: null
+  initialize_from: phase3_switch
   load_model: false
   resume: false
   force: true
