@@ -1,0 +1,38 @@
+{
+    "DroneDefender": {
+        "checkpoints": [
+            {
+                "steps": 499960,
+                "file_path": "results\\DefenderFlight\\DroneDefender\\DroneDefender-499960.onnx",
+                "reward": null,
+                "creation_time": 1748105339.5809262,
+                "auxillary_file_paths": [
+                    "results\\DefenderFlight\\DroneDefender\\DroneDefender-499960.pt"
+                ]
+            },
+            {
+                "steps": 992918,
+                "file_path": "results\\DefenderFlight\\DroneDefender\\DroneDefender-992918.onnx",
+                "reward": null,
+                "creation_time": 1748105578.100683,
+                "auxillary_file_paths": [
+                    "results\\DefenderFlight\\DroneDefender\\DroneDefender-992918.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 992918,
+            "file_path": "results\\DefenderFlight\\DroneDefender.onnx",
+            "reward": null,
+            "creation_time": 1748105578.100683,
+            "auxillary_file_paths": [
+                "results\\DefenderFlight\\DroneDefender\\DroneDefender-992918.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.0+cu118"
+    }
+}

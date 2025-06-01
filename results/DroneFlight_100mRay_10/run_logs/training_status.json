@@ -1,0 +1,56 @@
+{
+    "DroneFlight": {
+        "checkpoints": [
+            {
+                "steps": 499967,
+                "file_path": "results\\DroneFlight_100mRay_10\\DroneFlight\\DroneFlight-499967.onnx",
+                "reward": -388.399997651577,
+                "creation_time": 1748789070.227658,
+                "auxillary_file_paths": [
+                    "results\\DroneFlight_100mRay_10\\DroneFlight\\DroneFlight-499967.pt"
+                ]
+            },
+            {
+                "steps": 999952,
+                "file_path": "results\\DroneFlight_100mRay_10\\DroneFlight\\DroneFlight-999952.onnx",
+                "reward": -227.84285734593868,
+                "creation_time": 1748789437.6615562,
+                "auxillary_file_paths": [
+                    "results\\DroneFlight_100mRay_10\\DroneFlight\\DroneFlight-999952.pt"
+                ]
+            },
+            {
+                "steps": 1499966,
+                "file_path": "results\\DroneFlight_100mRay_10\\DroneFlight\\DroneFlight-1499966.onnx",
+                "reward": 91.66000067045292,
+                "creation_time": 1748789810.2864563,
+                "auxillary_file_paths": [
+                    "results\\DroneFlight_100mRay_10\\DroneFlight\\DroneFlight-1499966.pt"
+                ]
+            },
+            {
+                "steps": 1953420,
+                "file_path": "results\\DroneFlight_100mRay_10\\DroneFlight\\DroneFlight-1953420.onnx",
+                "reward": 98.10943421355958,
+                "creation_time": 1748790145.9943836,
+                "auxillary_file_paths": [
+                    "results\\DroneFlight_100mRay_10\\DroneFlight\\DroneFlight-1953420.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1953420,
+            "file_path": "results\\DroneFlight_100mRay_10\\DroneFlight.onnx",
+            "reward": 98.10943421355958,
+            "creation_time": 1748790145.9943836,
+            "auxillary_file_paths": [
+                "results\\DroneFlight_100mRay_10\\DroneFlight\\DroneFlight-1953420.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.0+cu118"
+    }
+}

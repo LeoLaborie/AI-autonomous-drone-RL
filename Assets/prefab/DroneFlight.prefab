@@ -2811,7 +2811,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 8738f27a717da634a89c54e733be5b9f, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: e5b2dc0654a0d4045882ea5547c4c982, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: DroneFlight

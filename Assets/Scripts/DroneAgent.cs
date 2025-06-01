@@ -16,6 +16,7 @@ public class DroneAgent : Agent
     private float maxSpeed = 0f;
     private int speedCount = 0;
 
+    private int stepCount = 0;
 
     [Header("Références")]
     public Transform target;
@@ -25,7 +26,7 @@ public class DroneAgent : Agent
     public Transform trainingArea;
 
     [Header("Paramètres")]
-    public float maxStepTime = 10000f;
+    public float maxStepTime = 1000;
 
     public int horizontalRays = 12;  // azimut (0° → 360°)
     public int verticalRays = 6;     // élévation (-90° → 90°)
@@ -51,7 +52,7 @@ public class DroneAgent : Agent
             float maxKmH = maxSpeed * 3.6f;
             Debug.Log($"[Agent {name}] Vitesse moyenne: {averageKmH:F2} km/h | Vitesse max: {maxKmH:F2} km/h");
         }
-
+        stepCount = 0;
         speedSum = 0f;
         maxSpeed = 0f;
         speedCount = 0;
@@ -101,7 +102,7 @@ public class DroneAgent : Agent
 
                 if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitTarget, rayLength, targetMask))
                 {
-                    sensor.AddObservation(1f);
+                    sensor.AddObservation(2f);
                 }
                 else if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitObstacle, rayLength, obstacleMask))
                 {
@@ -124,7 +125,7 @@ public class DroneAgent : Agent
 
                     if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitTarget, rayLength, targetMask))
                     {
-                        sensor.AddObservation(1f);
+                        sensor.AddObservation(2f);
                     }
                     else if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitObstacle, rayLength, obstacleMask))
                     {
@@ -154,22 +155,24 @@ public class DroneAgent : Agent
         movement.SetInput(vertical, horizontal, rotate, ascend);
 
         // Récompense basée sur la variation de distance à la cible (locale)
-        // float currentDistance = Vector3.Distance(transform.localPosition, target.localPosition);
-        // float delta = previousDistanceToTarget - currentDistance;
+        float currentDistance = Vector3.Distance(transform.localPosition, target.localPosition);
+        float delta = previousDistanceToTarget - currentDistance;
         // float proximityReward = (1f - Mathf.Pow(currentDistance, 2) / 40000);
 
-        // if (delta < 0f) AddReward(-0.1f);
+        if (delta < 0f) AddReward(-0.1f);
         // else AddReward(0.1f);
-        AddReward(-0.2f);
+        stepCount++;
+        // AddReward(-0.00002f*stepCount);
+        AddReward(-0.1f);
 
 
-
-        if (StepCount > maxStepTime)
+        if (stepCount > maxStepTime)
         {
+            AddReward(-50f);
             EndEpisode();
         }
 
-        // previousDistanceToTarget = currentDistance;
+        previousDistanceToTarget = currentDistance;
         float speed = rb.linearVelocity.magnitude;
         speedSum += speed;
         maxSpeed = Mathf.Max(maxSpeed, speed);

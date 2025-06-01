@@ -1,0 +1,56 @@
+{
+    "DroneFlight": {
+        "checkpoints": [
+            {
+                "steps": 499975,
+                "file_path": "results\\DroneFlight_50mRay\\DroneFlight\\DroneFlight-499975.onnx",
+                "reward": 15.240000915527343,
+                "creation_time": 1748790624.5661066,
+                "auxillary_file_paths": [
+                    "results\\DroneFlight_50mRay\\DroneFlight\\DroneFlight-499975.pt"
+                ]
+            },
+            {
+                "steps": 999982,
+                "file_path": "results\\DroneFlight_50mRay\\DroneFlight\\DroneFlight-999982.onnx",
+                "reward": 7.999998728434245,
+                "creation_time": 1748790995.7054653,
+                "auxillary_file_paths": [
+                    "results\\DroneFlight_50mRay\\DroneFlight\\DroneFlight-999982.pt"
+                ]
+            },
+            {
+                "steps": 1499957,
+                "file_path": "results\\DroneFlight_50mRay\\DroneFlight\\DroneFlight-1499957.onnx",
+                "reward": 24.383333206176758,
+                "creation_time": 1748791369.5737216,
+                "auxillary_file_paths": [
+                    "results\\DroneFlight_50mRay\\DroneFlight\\DroneFlight-1499957.pt"
+                ]
+            },
+            {
+                "steps": 1550667,
+                "file_path": "results\\DroneFlight_50mRay\\DroneFlight\\DroneFlight-1550667.onnx",
+                "reward": 18.590322556034213,
+                "creation_time": 1748791410.8148065,
+                "auxillary_file_paths": [
+                    "results\\DroneFlight_50mRay\\DroneFlight\\DroneFlight-1550667.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1550667,
+            "file_path": "results\\DroneFlight_50mRay\\DroneFlight.onnx",
+            "reward": 18.590322556034213,
+            "creation_time": 1748791410.8148065,
+            "auxillary_file_paths": [
+                "results\\DroneFlight_50mRay\\DroneFlight\\DroneFlight-1550667.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.0+cu118"
+    }
+}
