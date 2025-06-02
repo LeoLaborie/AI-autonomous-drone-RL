@@ -177,7 +177,7 @@ public class DroneAgent : Agent
         float deltaA = Mathf.Abs(ascend - lastAscend);
 
         // Pénalité sur la variation des actions (valeurs à ajuster)
-        float variationPenalty = -0.1f * Mathf.Abs(deltaV + deltaH + deltaR + deltaA);
+        float variationPenalty = -0.1f * (Mathf.Abs(deltaV) + Mathf.Abs(deltaH) + Mathf.Abs(deltaR) + Mathf.Abs(deltaA));
         AddReward(variationPenalty);
 
         // Mémoriser pour le prochain step
