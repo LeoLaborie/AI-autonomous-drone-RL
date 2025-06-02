@@ -27,6 +27,8 @@ public class DroneAgent : Agent
     private static int successCount = 0;
     private static int timeoutCount = 0;
     private static int obstacleCrashCount = 0;
+    private float episodeStartTime;
+    private float initialDistanceToTarget;
 
 
     [Header("Références")]
@@ -53,6 +55,7 @@ public class DroneAgent : Agent
 
     public override void OnEpisodeBegin()
     {   
+
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
@@ -61,13 +64,14 @@ public class DroneAgent : Agent
         speedSum = 0f;
         maxSpeed = 0f;
         speedCount = 0;
+        
 
 
         // Positionnement en coordonnées locales
         // 1. Positionner la cible de manière aléatoire dans la zone
         target.localPosition = new Vector3(
             Random.Range(-75f, 75f),
-            Random.Range(1f, 199f),
+            Random.Range(25f, 175f),
             Random.Range(-75f, 75f)
         );
 
@@ -89,7 +93,8 @@ public class DroneAgent : Agent
 
         previousDistanceToTarget = Vector3.Distance(transform.localPosition, target.localPosition);
         // previousPosition = transform.localPosition;
-
+        episodeStartTime = Time.time;
+        initialDistanceToTarget = previousDistanceToTarget;
 
         PlaceObjectsScatteredWithDistanceCheck(obstacles, new Vector2(180, 180), y: 0f);
 
@@ -294,21 +299,24 @@ public class DroneAgent : Agent
 
     private void PrintEpisodeStats()
     {
-        totalEpisodes = successCount +  timeoutCount  + obstacleCrashCount;
+        totalEpisodes = successCount + timeoutCount + obstacleCrashCount;
         float successRate = 100f * successCount / totalEpisodes;
         float timeoutRate = 100f * timeoutCount / totalEpisodes;
         float obstacleRate = 100f * obstacleCrashCount / totalEpisodes;
+
+        float episodeDuration = Time.time - episodeStartTime;
 
         if (speedCount > 0)
         {
             float averageSpeed = speedSum / speedCount;
             float averageKmH = averageSpeed * 3.6f;
             float maxKmH = maxSpeed * 3.6f;
-            Debug.Log($"[Agent {totalEpisodes}] Vitesse moyenne: {averageKmH:F2} km/h | Vitesse max: {maxKmH:F2} km/h");
+            Debug.Log($"[Agent {totalEpisodes}] Vitesse moyenne: {averageKmH:F2} km/h | Vitesse max: {maxKmH:F2} km/h | Durée: {episodeDuration:F1}s | Distance initiale: {initialDistanceToTarget:F1}m");
         }
 
         Debug.Log($"[Stats] Succès: {successRate:F1}%, Temps écoulé: {timeoutRate:F1}%, Collision: {obstacleRate:F1}% (sur {totalEpisodes} épisodes)");
     }
+
 
 
     private void OnDrawGizmosSelected()
