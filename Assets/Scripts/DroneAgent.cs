@@ -18,6 +18,17 @@ public class DroneAgent : Agent
 
     private int stepCount = 0;
 
+    private float lastVertical = 0f;
+    private float lastHorizontal = 0f;
+    private float lastRotate = 0f;
+    private float lastAscend = 0f;
+
+    private static int totalEpisodes = 0;
+    private static int successCount = 0;
+    private static int timeoutCount = 0;
+    private static int obstacleCrashCount = 0;
+
+
     [Header("Références")]
     public Transform target;
     // public Collider[] limiteTerrain;
@@ -26,7 +37,7 @@ public class DroneAgent : Agent
     public Transform trainingArea;
 
     [Header("Paramètres")]
-    public float maxStepTime = 1000;
+    public float maxStepTime = 4000;
 
     public int horizontalRays = 12;  // azimut (0° → 360°)
     public int verticalRays = 6;     // élévation (-90° → 90°)
@@ -45,13 +56,7 @@ public class DroneAgent : Agent
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
-        if (speedCount > 0)
-        {
-            float averageSpeed = speedSum / speedCount;
-            float averageKmH = averageSpeed * 3.6f;
-            float maxKmH = maxSpeed * 3.6f;
-            Debug.Log($"[Agent {name}] Vitesse moyenne: {averageKmH:F2} km/h | Vitesse max: {maxKmH:F2} km/h");
-        }
+        
         stepCount = 0;
         speedSum = 0f;
         maxSpeed = 0f;
@@ -59,18 +64,28 @@ public class DroneAgent : Agent
 
 
         // Positionnement en coordonnées locales
-        transform.localPosition = new Vector3(
-            Random.Range(-50f, 50f),
-            Random.Range(1f, 100f),
-            Random.Range(-50f, 50f)
+        // 1. Positionner la cible de manière aléatoire dans la zone
+        target.localPosition = new Vector3(
+            Random.Range(-75f, 75f),
+            Random.Range(1f, 199f),
+            Random.Range(-75f, 75f)
         );
+
+        // 2. Trouver une position pour le drone à au moins 100m de la cible
+        Vector3 dronePos;
+        do
+        {
+            dronePos = new Vector3(
+            Random.Range(-100f, 100f),
+            Random.Range(1f, 199f),
+            Random.Range(-100f, 100f)
+            );
+        }
+        while (Vector3.Distance(dronePos, target.localPosition) < 100f);
+
+        transform.localPosition = dronePos;
         transform.rotation = Quaternion.identity;
 
-        target.localPosition = new Vector3(
-            Random.Range(-50f, 50f),
-            Random.Range(1f, 100f),
-            Random.Range(-50f, 50f)
-        );
 
         previousDistanceToTarget = Vector3.Distance(transform.localPosition, target.localPosition);
         // previousPosition = transform.localPosition;
@@ -82,12 +97,10 @@ public class DroneAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // Observations standard du drone
         sensor.AddObservation(rb.linearVelocity); // 3
         sensor.AddObservation(transform.forward); // 3
         sensor.AddObservation(target.localPosition - transform.localPosition); // 3
 
-        // Observation du LIDAR (raycasts en 3D)
         for (int i = 0; i < verticalRays; i++)
         {
             float verticalT = (float)i / (verticalRays - 1);
@@ -96,21 +109,20 @@ public class DroneAgent : Agent
             if (Mathf.Abs(verticalAngle) > 89f)
             {
                 Quaternion rotation = Quaternion.Euler(verticalAngle, 0f, 0f);
-                Vector3 dir = transform.rotation * (rotation * Vector3.forward);
+                Vector3 dir = transform.localRotation * (rotation * Vector3.forward);
+                Vector3 origin = transform.TransformPoint(Vector3.zero);
 
-                
-
-                if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitTarget, rayLength, targetMask))
+                if (Physics.Raycast(origin, dir, out RaycastHit hitTarget, rayLength, targetMask))
                 {
                     sensor.AddObservation(2f);
                 }
-                else if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitObstacle, rayLength, obstacleMask))
+                else if (Physics.Raycast(origin, dir, out RaycastHit hitObstacle, rayLength, obstacleMask))
                 {
                     sensor.AddObservation(hitObstacle.distance / rayLength);
                 }
                 else
                 {
-                    sensor.AddObservation(1f); // Pas de hit
+                    sensor.AddObservation(1f);
                 }
             }
             else
@@ -119,26 +131,26 @@ public class DroneAgent : Agent
                 {
                     float horizontalAngle = 360f * j / horizontalRays;
                     Quaternion rotation = Quaternion.Euler(verticalAngle, horizontalAngle, 0f);
-                    Vector3 dir = transform.rotation * (rotation * Vector3.forward);
+                    Vector3 dir = transform.localRotation * (rotation * Vector3.forward);
+                    Vector3 origin = transform.TransformPoint(Vector3.zero);
 
-                    
-
-                    if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitTarget, rayLength, targetMask))
+                    if (Physics.Raycast(origin, dir, out RaycastHit hitTarget, rayLength, targetMask))
                     {
                         sensor.AddObservation(2f);
                     }
-                    else if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitObstacle, rayLength, obstacleMask))
+                    else if (Physics.Raycast(origin, dir, out RaycastHit hitObstacle, rayLength, obstacleMask))
                     {
                         sensor.AddObservation(hitObstacle.distance / rayLength);
                     }
                     else
                     {
-                        sensor.AddObservation(1f); // Pas de hit
+                        sensor.AddObservation(1f);
                     }
                 }
             }
         }
     }
+
 
 
 
@@ -153,13 +165,29 @@ public class DroneAgent : Agent
         float ascend = Mathf.Clamp(actions.ContinuousActions[3], -1f, 1f);
 
         movement.SetInput(vertical, horizontal, rotate, ascend);
+        // Calcul des variations
+        float deltaV = Mathf.Abs(vertical - lastVertical);
+        float deltaH = Mathf.Abs(horizontal - lastHorizontal);
+        float deltaR = Mathf.Abs(rotate - lastRotate);
+        float deltaA = Mathf.Abs(ascend - lastAscend);
+
+        // Pénalité sur la variation des actions (valeurs à ajuster)
+        float variationPenalty = -0.1f * Mathf.Abs(deltaV + deltaH + deltaR + deltaA);
+        AddReward(variationPenalty);
+
+        // Mémoriser pour le prochain step
+        lastVertical = vertical;
+        lastHorizontal = horizontal;
+        lastRotate = rotate;
+        lastAscend = ascend;
+
 
         // Récompense basée sur la variation de distance à la cible (locale)
-        float currentDistance = Vector3.Distance(transform.localPosition, target.localPosition);
-        float delta = previousDistanceToTarget - currentDistance;
+        // float currentDistance = Vector3.Distance(transform.localPosition, target.localPosition);
+        // float delta = previousDistanceToTarget - currentDistance;
         // float proximityReward = (1f - Mathf.Pow(currentDistance, 2) / 40000);
 
-        if (delta < 0f) AddReward(-0.1f);
+        // if (delta < 0f) AddReward(-0.1f);
         // else AddReward(0.1f);
         stepCount++;
         // AddReward(-0.00002f*stepCount);
@@ -168,11 +196,14 @@ public class DroneAgent : Agent
 
         if (stepCount > maxStepTime)
         {
-            AddReward(-50f);
+            Debug.Log("Temps écoulé");
+            timeoutCount++;
+            PrintEpisodeStats();
             EndEpisode();
         }
 
-        previousDistanceToTarget = currentDistance;
+
+        // previousDistanceToTarget = currentDistance;
         float speed = rb.linearVelocity.magnitude;
         speedSum += speed;
         maxSpeed = Mathf.Max(maxSpeed, speed);
@@ -196,19 +227,24 @@ public class DroneAgent : Agent
         // Si on touche la cible
         if (other.CompareTag("Target"))
         {
-            AddReward(+50f);
+            Debug.Log("Target touché");
+            AddReward(+100f);
+            successCount++;
+            PrintEpisodeStats();
             EndEpisode();
             return;
         }
-
-        // Si on touche un obstacle (List<Transform>)
 
         if (other.CompareTag("Obstacle"))
         {
-            AddReward(-50);
+            Debug.Log("Obstacle touché");
+            AddReward(-300);
+            obstacleCrashCount++;
+            PrintEpisodeStats();
             EndEpisode();
             return;
         }
+
         
 
 
@@ -256,6 +292,23 @@ public class DroneAgent : Agent
         }
     }
 
+    private void PrintEpisodeStats()
+    {
+        totalEpisodes = successCount +  timeoutCount  + obstacleCrashCount;
+        float successRate = 100f * successCount / totalEpisodes;
+        float timeoutRate = 100f * timeoutCount / totalEpisodes;
+        float obstacleRate = 100f * obstacleCrashCount / totalEpisodes;
+
+        if (speedCount > 0)
+        {
+            float averageSpeed = speedSum / speedCount;
+            float averageKmH = averageSpeed * 3.6f;
+            float maxKmH = maxSpeed * 3.6f;
+            Debug.Log($"[Agent {totalEpisodes}] Vitesse moyenne: {averageKmH:F2} km/h | Vitesse max: {maxKmH:F2} km/h");
+        }
+
+        Debug.Log($"[Stats] Succès: {successRate:F1}%, Temps écoulé: {timeoutRate:F1}%, Collision: {obstacleRate:F1}% (sur {totalEpisodes} épisodes)");
+    }
 
 
     private void OnDrawGizmosSelected()
@@ -263,37 +316,38 @@ public class DroneAgent : Agent
         if (target != null)
         {
             Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position, target.position);
+            Gizmos.DrawLine(transform.position, target.position); // Pas besoin de changer ici car c’est visuel
         }
 
         if (obstacleMask == 0) return;
+
+        Vector3 origin = transform.TransformPoint(Vector3.zero);
 
         for (int i = 0; i < verticalRays; i++)
         {
             float verticalT = (float)i / (verticalRays - 1);
             float verticalAngle = Mathf.Lerp(-90f, 90f, verticalT);
 
-            //Si verticalAngle est proche de ±90°, tirer un seul rayon droit
             if (Mathf.Abs(verticalAngle) > 89f)
             {
                 Quaternion rotation = Quaternion.Euler(verticalAngle, 0f, 0f);
-                Vector3 dir = transform.rotation * (rotation * Vector3.forward);
+                Vector3 dir = transform.localRotation * (rotation * Vector3.forward);
 
-                if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitTarget, rayLength, targetMask))
+                if (Physics.Raycast(origin, dir, out RaycastHit hitTarget, rayLength, targetMask))
                 {
                     Gizmos.color = Color.cyan;
-                    Gizmos.DrawRay(transform.position, dir * rayLength);
+                    Gizmos.DrawRay(origin, dir * rayLength);
                 }
-                else if (Physics.Raycast(transform.position, dir, out RaycastHit hit, rayLength, obstacleMask))
+                else if (Physics.Raycast(origin, dir, out RaycastHit hit, rayLength, obstacleMask))
                 {
                     Gizmos.color = Color.Lerp(Color.red, Color.yellow, 0.5f);
-                    Gizmos.DrawLine(transform.position, hit.point);
+                    Gizmos.DrawLine(origin, hit.point);
                     Gizmos.DrawSphere(hit.point, 0.2f);
                 }
                 else
                 {
                     Gizmos.color = Color.cyan;
-                    Gizmos.DrawRay(transform.position, dir * rayLength);
+                    Gizmos.DrawRay(origin, dir * rayLength);
                 }
             }
             else
@@ -302,28 +356,29 @@ public class DroneAgent : Agent
                 {
                     float horizontalAngle = 360f * j / horizontalRays;
                     Quaternion rotation = Quaternion.Euler(verticalAngle, horizontalAngle, 0f);
-                    Vector3 dir = transform.rotation * (rotation * Vector3.forward);
+                    Vector3 dir = transform.localRotation * (rotation * Vector3.forward);
 
-                    if (Physics.Raycast(transform.localPosition, dir, out RaycastHit hitTarget, rayLength, targetMask))
+                    if (Physics.Raycast(origin, dir, out RaycastHit hitTarget, rayLength, targetMask))
                     {
                         Gizmos.color = Color.cyan;
-                        Gizmos.DrawRay(transform.position, dir * rayLength);
+                        Gizmos.DrawRay(origin, dir * rayLength);
                     }
-                    else if (Physics.Raycast(transform.position, dir, out RaycastHit hit, rayLength, obstacleMask))
+                    else if (Physics.Raycast(origin, dir, out RaycastHit hit, rayLength, obstacleMask))
                     {
                         Gizmos.color = Color.Lerp(Color.red, Color.yellow, 0.5f);
-                        Gizmos.DrawLine(transform.position, hit.point);
+                        Gizmos.DrawLine(origin, hit.point);
                         Gizmos.DrawSphere(hit.point, 0.2f);
                     }
                     else
                     {
                         Gizmos.color = Color.cyan;
-                        Gizmos.DrawRay(transform.position, dir * rayLength);
+                        Gizmos.DrawRay(origin, dir * rayLength);
                     }
                 }
             }
         }
     }
+
 
 
 
